@@ -14,7 +14,7 @@ Posti Glue Api library, to help to integrate with other systems
 To install via composer:
 
 ```sh
-composer require mijora/posti-glue-api
+composer require posti/glue-api
 ```
 
 ## How to use
