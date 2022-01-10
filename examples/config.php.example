@@ -1,0 +1,10 @@
+<?php
+
+$username = "";
+$password = "";
+$busines_id = "";
+$contract_number = "";
+$warehouse_id = "";
+$distributor_id = "";
+$product_id = "";
+$order_id = "";
