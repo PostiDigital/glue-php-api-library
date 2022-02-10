@@ -279,7 +279,7 @@ class Api
      */
 
     public function addOrder($order) {
-        $status = $this->ApiCall('orders', $order, 'POST');
+        $status = $this->ApiCall('orders', $order->getData(), 'POST');
         if ($status !== false) {
             return $status['externalId'] ?? false;
         }

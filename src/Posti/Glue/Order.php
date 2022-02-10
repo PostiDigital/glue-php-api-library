@@ -406,7 +406,7 @@ class Order
                 "telephone" => $this->receiver->getTelephone(),
                 "email" => $this->receiver->getEmail(),
             ],
-            "deliveryOrder" => [
+            "deliveryAddress" => [
                 "externalId" => $this->getBusinessId() . "-" . $this->delivery->getId(),
                 "name" => $this->delivery->getName(),
                 "streetOrder" => $this->delivery->getStreet(),
@@ -429,7 +429,7 @@ class Order
           if ($pickup_point) {
           $address = $this->pickupPointData($pickup_point, $_order, $business_id);
           if ($address) {
-          $order['deliveryOrder'] = $address;
+          $order['deliveryAddress'] = $address;
           }
           } */
         if (!empty($additional_services)) {
