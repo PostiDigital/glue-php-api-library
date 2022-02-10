@@ -372,7 +372,7 @@ class Order
             ],
             "vendor" => [
                 "name" => $this->sender->getName(),
-                "streetOrder" => $this->sender->getStreet(),
+                "streetAddress" => $this->sender->getStreet(),
                 "postalCode" => $this->sender->getPostcode(),
                 "postOffice" => $this->sender->getCity(),
                 "country" => $this->sender->getCountry(),
@@ -380,7 +380,7 @@ class Order
             ],
             "sender" => [
                 "name" => $this->sender->getName(),
-                "streetOrder" => $this->sender->getStreet(),
+                "streetAddress" => $this->sender->getStreet(),
                 "postalCode" => $this->sender->getPostcode(),
                 "postOffice" => $this->sender->getCity(),
                 "country" => $this->sender->getCountry(),
@@ -389,7 +389,7 @@ class Order
             "client" => [
                 "externalId" => $this->getBusinessId() . "-" . $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
-                "streetOrder" => $this->receiver->getStreet(),
+                "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
                 "postOffice" => $this->receiver->getCity(),
                 "country" => $this->receiver->getCountry(),
@@ -399,7 +399,7 @@ class Order
             "recipient" => [
                 "externalId" => $this->getBusinessId() . "-" . $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
-                "streetOrder" => $this->receiver->getStreet(),
+                "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
                 "postOffice" => $this->receiver->getCity(),
                 "country" => $this->receiver->getCountry(),
@@ -409,7 +409,7 @@ class Order
             "deliveryAddress" => [
                 "externalId" => $this->getBusinessId() . "-" . $this->delivery->getId(),
                 "name" => $this->delivery->getName(),
-                "streetOrder" => $this->delivery->getStreet(),
+                "streetAddress" => $this->delivery->getStreet(),
                 "postalCode" => $this->delivery->getPostcode(),
                 "postOffice" => $this->delivery->getCity(),
                 "country" => $this->delivery->getCountry(),
