@@ -182,6 +182,9 @@ class Api
             }
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         }
+        if ($action == "DELETE") {
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $action);
+        }
         if ($action == "GET" && is_array($data)) {
             $url .= '?' . http_build_query($data);
         }
@@ -194,7 +197,7 @@ class Api
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        $this->logger->log("info", $env . "Request to: " . $url . "\nResponse: " . json_encode($result));
+        $this->logger->log("info", $env . " " . $action . " Request to: " . $url . "\nResponse: " . json_encode($result));
 
         if (!$result) {
             $this->logger->log("error", $http_status . ' - response from ' . $url . ': ' . $result);
