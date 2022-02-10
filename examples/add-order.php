@@ -29,7 +29,7 @@ try {
     $sender->setCity('City');
     $sender->setCountry('LT');
     $sender->setTelephone('+37060000000');
-    $sender->setTelephone('info@mijora.lt');
+    $sender->setEmail('info@mijora.lt');
     
     $order->setSender($sender);
     
@@ -41,7 +41,7 @@ try {
     $receiver->setCity('City');
     $receiver->setCountry('LT');
     $receiver->setTelephone('+37060000000');
-    $receiver->setTelephone('info@mijora.lt');
+    $receiver->setEmail('info@mijora.lt');
     
     $order->setReceiver($receiver);
     

@@ -295,6 +295,16 @@ class Api
         $status = $this->ApiCall('orders/' . $order_id, '', 'GET');
         return $status;
     }
+    
+    /*
+     * @param string $order_id
+     * @return mixed
+     */
+
+    public function deleteOrder($order_id) {
+        $status = $this->ApiCall('orders/' . $order_id, '', 'DELETE');
+        return $status;
+    }
 
     /*
      * @param $url

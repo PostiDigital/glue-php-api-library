@@ -371,20 +371,20 @@ class Order
                 "documentType" => "SalesOrder"
             ],
             "vendor" => [
-                "name" => $this->receiver->getName(),
-                "streetOrder" => $this->receiver->getStreet(),
-                "postalCode" => $this->receiver->getPostcode(),
-                "postOffice" => $this->receiver->getCity(),
-                "country" => $this->receiver->getCountry(),
-                "email" => $this->receiver->getEmail()
+                "name" => $this->sender->getName(),
+                "streetOrder" => $this->sender->getStreet(),
+                "postalCode" => $this->sender->getPostcode(),
+                "postOffice" => $this->sender->getCity(),
+                "country" => $this->sender->getCountry(),
+                "email" => $this->sender->getEmail()
             ],
             "sender" => [
-                "name" => $this->receiver->getName(),
-                "streetOrder" => $this->receiver->getStreet(),
-                "postalCode" => $this->receiver->getPostcode(),
-                "postOffice" => $this->receiver->getCity(),
-                "country" => $this->receiver->getCountry(),
-                "email" => $this->receiver->getEmail()
+                "name" => $this->sender->getName(),
+                "streetOrder" => $this->sender->getStreet(),
+                "postalCode" => $this->sender->getPostcode(),
+                "postOffice" => $this->sender->getCity(),
+                "country" => $this->sender->getCountry(),
+                "email" => $this->sender->getEmail()
             ],
             "client" => [
                 "externalId" => $this->getBusinessId() . "-" . $this->receiver->getId(),
