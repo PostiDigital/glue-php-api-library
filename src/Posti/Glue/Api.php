@@ -99,9 +99,9 @@ class Api
     
     private function getApiUrl() {
         if ($this->test) {
-            return "https://argon.api.posti.fi/ecommerce/v3/";
+            return "https://argon.ecom-api.posti.com/ecommerce/v3/";
         }
-        return "https://api.posti.fi/ecommerce/v3/";
+        return "https://ecom-api.posti.com/ecommerce/v3/";
     }
     
     /*
@@ -206,7 +206,7 @@ class Api
 
 
         if ($http_status != 200) {
-            $this->logger->log("error", $env . "Request to: " . $url . "\nResponse code: " . $http_status . "\nResult: " . $result);
+            $this->logger->log("error", $env . " " . $action . "Request to: " . $url . "\nResponse code: " . $http_status . "\nResult: " . $result);
             return false;
         }
         return json_decode($result, true);
