@@ -152,8 +152,8 @@ class Api
         if (isset($token_data->access_token)) {
             $this->token = $token_data->access_token;
             //add token 10 minutes expire
-            $this->token_expire = time() + 600;
-            return $token_data;
+            $this->token_expire = time() + $token_data->expires_in - 600;
+            return $this->token;
         }
         return false;
     }
