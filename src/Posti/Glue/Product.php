@@ -123,6 +123,15 @@ class Product
         $this->external_id = $external_id;
         return $this;
     }
+    
+    /*
+     * @return string
+     */
+
+    public function getExternalId() {
+        return $this->external_id;
+    }
+    
     /*
      * @param string $business_id
      * @return Product

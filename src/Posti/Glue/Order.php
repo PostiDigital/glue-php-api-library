@@ -79,6 +79,14 @@ class Order
      * @var array
      */
     private $items = [];
+    
+    /*
+     * @return string
+     */
+
+    public function getExternalId() {
+        return $this->getBusinessId() . '-' . $this->getId();
+    }
 
     /*
      * @param string $id
