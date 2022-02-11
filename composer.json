@@ -1,0 +1,10 @@
+{
+    "name": "posti/glue-api",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Posti\\Glue\\": "src/Posti/Glue"
+        }
+    },
+    "require": {}
+}

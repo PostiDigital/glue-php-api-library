@@ -1,0 +1,590 @@
+<?php
+
+namespace Posti\Glue;
+
+use PostiWarehouse\Classes\Dataset;
+
+class Product
+{
+    /*
+     * @var array
+     */
+    
+    protected $optional = [
+        'external_id',
+        'wholesale_price',
+        'sku',
+        'quantity',
+    ];
+    
+    /*
+     * @var string
+     */
+
+    private $external_id;
+    
+    /*
+     * @var string
+     */
+
+    private $business_id;
+
+    /*
+     * @var string
+     */
+    private $warehouse;
+
+    /*
+     * @var string
+     */
+    private $distributor;
+
+    /*
+     * @var string
+     */
+    private $sku;
+
+    /*
+     * @var string
+     */
+    private $ean;
+
+    /*
+     * @var string
+     */
+    private $currency;
+
+    /*
+     * @var float
+     */
+    private $price;
+
+    /*
+     * @var float
+     */
+    private $wholesale_price;
+    
+    /*
+     * @var float
+     */
+    private $quantity;
+
+    /*
+     * @var string
+     */
+    private $name;
+
+    /*
+     * @var string
+     */
+    private $description;
+
+    /*
+     * @var float
+     */
+    private $weight;
+
+    /*
+     * @var float
+     */
+    private $length;
+
+    /*
+     * @var float
+     */
+    private $width;
+
+    /*
+     * @var float
+     */
+    private $height;
+
+    /*
+     * @var bool
+     */
+    private $is_fragile = false;
+
+    /*
+     * @var bool
+     */
+    private $is_dangerous = false;
+
+    /*
+     * @var bool
+     */
+    private $is_oversized = false;
+
+    /*
+     * @param string $external_id
+     * @return Product
+     */
+
+    public function setExternalId($external_id) {
+        $this->external_id = $external_id;
+        return $this;
+    }
+    
+    /*
+     * @return string
+     */
+
+    public function getExternalId() {
+        return $this->external_id;
+    }
+    
+    /*
+     * @param string $business_id
+     * @return Product
+     */
+
+    public function setBusinessId($business_id) {
+        $this->business_id = $business_id;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getBusinessId() {
+        return $this->business_id;
+    }
+
+    /*
+     * @param string $warehouse
+     * @return Product
+     */
+
+    public function setWarehouse($warehouse) {
+        $this->warehouse = $warehouse;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getWarehouse() {
+        return $this->warehouse;
+    }
+
+    /*
+     * @param string $distributor
+     * @return Product
+     */
+
+    public function setDistributor($distributor) {
+        $this->distributor = $distributor;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getDistributor() {
+        return $this->distributor;
+    }
+
+    /*
+     * @param string $sku
+     * @return Product
+     */
+
+    public function setSku($sku) {
+        $this->sku = $sku;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getSku() {
+        return $this->sku;
+    }
+
+    /*
+     * @param string $ean
+     * @return Product
+     */
+
+    public function setEan($ean) {
+        $this->ean = $ean;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getEan() {
+        return $this->ean;
+    }
+
+    /*
+     * @param string $currency
+     * @return Product
+     */
+
+    public function setCurrency($currency) {
+        $this->currency = $currency;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getCurrency() {
+        return $this->currency;
+    }
+
+    /*
+     * @param float $price
+     * @return Product
+     */
+
+    public function setPrice($price) {
+        $this->price = $price;
+        return $this;
+    }
+
+    /*
+     * @return float
+     */
+
+    public function getPrice() {
+        return $this->price;
+    }
+
+    /*
+     * @param float $wholesale_price
+     * @return Product
+     */
+
+    public function setWholesalePrice($wholesale_price) {
+        $this->wholesale_price = $wholesale_price;
+        return $this;
+    }
+
+    /*
+     * @return float
+     */
+
+    public function getWholesalePrice() {
+        return $this->wholesale_price;
+    }
+    
+    /*
+     * @param float $quantity
+     * @return Product
+     */
+
+    public function setQuantity($quantity) {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
+    /*
+     * @return float
+     */
+
+    public function getQuantity() {
+        return $this->quantity;
+    }
+
+    /*
+     * @param string $name
+     * @return Product
+     */
+
+    public function setName($name) {
+        $this->name = $name;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getName() {
+        return $this->name;
+    }
+
+    /*
+     * @param string $description
+     * @return Product
+     */
+
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /*
+     * @param float $weight
+     * @return Product
+     */
+
+    public function setWeight($weight) {
+        $this->weight = $weight;
+        return $this;
+    }
+
+    /*
+     * @return float
+     */
+
+    public function getWeight() {
+        return $this->weight;
+    }
+
+    /*
+     * @param float $length
+     * @return Product
+     */
+
+    public function setLength($length) {
+        $this->length = $length;
+        return $this;
+    }
+
+    /*
+     * @return float
+     */
+
+    public function getLength() {
+        return $this->length;
+    }
+
+    /*
+     * @param float $width
+     * @return Product
+     */
+
+    public function setWidth($width) {
+        $this->width = $width;
+        return $this;
+    }
+
+    /*
+     * @return float
+     */
+
+    public function getWidth() {
+        return $this->width;
+    }
+
+    /*
+     * @param float $height
+     * @return Product
+     */
+
+    public function setHeight($height) {
+        $this->height = $height;
+        return $this;
+    }
+
+    /*
+     * @return float
+     */
+
+    public function getHeight() {
+        return $this->height;
+    }
+
+    /*
+     * @param bool $is_fragile
+     * @return Product
+     */
+
+    public function setIsFragile($is_fragile) {
+        $this->is_fragile = $is_fragile;
+        return $this;
+    }
+
+    /*
+     * @return bool
+     */
+
+    public function getIsFragile() {
+        return $this->is_fragile;
+    }
+
+    /*
+     * @param bool $is_dangerous
+     * @return Product
+     */
+
+    public function setIsDangerous($is_dangerous) {
+        $this->is_dangerous = $is_dangerous;
+        return $this;
+    }
+
+    /*
+     * @return bool
+     */
+
+    public function getIsDangerous() {
+        return $this->is_dangerous;
+    }
+
+    /*
+     * @param bool $is_oversized
+     * @return Product
+     */
+
+    public function setIsOversized($is_oversized) {
+        $this->is_oversized = $is_oversized;
+        return $this;
+    }
+
+    /*
+     * @return bool
+     */
+
+    public function getIsOversized() {
+        return $this->is_oversized;
+    }
+
+    /*
+     * @param array $data
+     * @return Product
+     */
+
+    public function fillData($data) {
+        if (is_array($data) && isset($data['balances'])) {
+            $data['balance'] = $data['balances'][0];
+        }
+        if (!is_array($data) || !isset($data['product']) || !isset($data['balance'])) {
+            return false;
+        }
+        
+        $this->setExternalId($data['product']['externalId'] ?? null);
+        $this->setWarehouse($data['balance']['catalogExternalId'] ?? null);
+        $this->setBusinessId($data['product']['supplierId'] ?? null);
+        $this->setDistributor($data['product']['distributor'] ?? null);
+
+        $this->setName($data['product']['descriptions']['en']['name'] ?? null);
+        $this->setDescription($data['product']['descriptions']['en']['description'] ?? null);
+
+        $this->setIsDangerous($data['product']['isDangerousGoods'] ?? false);
+        $this->setIsFragile($data['product']['isFragile'] ?? false);
+        $this->setIsOversized($data['product']['isOversized'] ?? false);
+
+        $this->setCurrency($data['balance']['currency'] ?? null);
+        $this->setPrice($data['product']['recommendedRetailPrice'] ?? null);
+        $this->setWholesalePrice($data['balance']['wholesalePrice'] ?? null);
+        $this->setQuantity($data['balance']['quantity'] ?? null);
+
+        $this->setEan($data['balance']['eanCode'] ?? null);
+
+        $this->setHeight($data['product']['measurements']['height'] ?? null);
+        $this->setLength($data['product']['measurements']['length'] ?? null);
+        $this->setWidth($data['product']['measurements']['width'] ?? null);
+        $this->setWeight($data['product']['measurements']['weight'] ?? null);
+        
+        return $this;
+    }
+
+    /*
+     * @return mixed
+     */
+
+    public function getData() {
+        $this->validate();
+
+        $posti_product_id = $this->business_id . '-' . $this->sku;
+        if (!$this->external_id) {
+            $this->external_id = $posti_product_id;
+        }
+
+        if (!$this->wholesale_price) {
+            $this->wholesale_price = (float) $this->price;
+        }
+        $product = array(
+            'externalId' => $posti_product_id,
+            "supplierId" => $this->business_id,
+            'descriptions' => array(
+                'en' => array(
+                    'name' => $this->name,
+                    'description' => $this->description
+                )
+            ),
+            'eanCode' => $this->ean, //$_product->get_sku(),
+            "unitOfMeasure" => "KPL",
+            "status" => "ACTIVE",
+            "recommendedRetailPrice" => $this->price,
+            "currency" => $this->currency,
+            "distributor" => $this->distributor,
+            "isFragile" => $this->is_fragile,
+            "isDangerousGoods" => $this->is_dangerous,
+            "isOversized" => $this->is_oversized,
+        );
+
+        $product['measurements'] = array(
+            "weight" => $this->weight,
+            "length" => $this->length,
+            "width" => $this->width,
+            "height" => $this->height,
+        );
+
+        $balances = array(
+            array(
+                "retailerId" => $this->business_id,
+                "productExternalId" => $posti_product_id,
+                "catalogExternalId" => $this->warehouse,
+                //"quantity" => 0.0,
+                "wholesalePrice" => $this->wholesale_price,
+                "currency" => $this->currency
+            )
+        );
+
+        return array('product' => $product, 'balances' => $balances);
+    }
+
+    /*
+     * @return mixed
+     */
+
+    private function validate() {
+        $errors = [];
+        $vars = get_object_vars($this);
+        foreach ($vars as $var => $value) {
+            if (in_array(trim($var, '$'), $this->optional)) {
+                continue;
+            }
+            if ($value === null) {
+                $errors[] = 'Variable ' . $var . ' is missing. Set it with set' . $this->getMethodName($var) . '($val).';
+            }
+        }
+        if (!empty($errors)) {
+            throw new \Exception(implode("<br/>", $errors));
+        }
+        return true;
+    }
+
+    /*
+     * @param string $var
+     * @return string
+     */
+
+    private function getMethodName($var) {
+        $name = '';
+        $parts = explode('_', trim($var, '$'));
+        foreach ($parts as $part) {
+            $name .= ucfirst($part);
+        }
+        return $name;
+    }
+
+}
