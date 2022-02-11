@@ -306,6 +306,19 @@ class Api
         }
         return $status;
     }
+    
+    /*
+     * @param string $order
+     * @return mixed
+     */
+
+    public function updateOrder($order) {
+        $status = $this->ApiCall('orders/' . $order->getExternalId(), $order->getData(), 'PUT');
+        if ($status !== false) {
+            return $status['externalId'] ?? false;
+        }
+        return $status;
+    }
 
     /*
      * @param string $order_id
