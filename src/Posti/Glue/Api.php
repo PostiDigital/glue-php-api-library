@@ -23,6 +23,12 @@ class Api
      */
     
     private $token = null;
+    
+    /*
+     * @var string
+     */
+    
+    private $token_expire = null;
 
     /*
      * @var bool
@@ -138,14 +144,26 @@ class Api
      */
     
     public function getToken() {
-
+        if($this->token) {
+            return $this->token;
+        }
         $token_data = json_decode($this->getPostiToken($this->getAuthUrl() . "/oauth/token?grant_type=client_credentials", $this->username, $this->password));
 
         if (isset($token_data->access_token)) {
             $this->token = $token_data->access_token;
+            //add token 10 minutes expire
+            $this->token_expire = time() + 600;
             return $token_data;
         }
         return false;
+    }
+    
+    /*
+     * @return mixed
+     */
+    
+    public function getTokenExpire() {
+        return $this->token_expire;
     }
 
     /*
