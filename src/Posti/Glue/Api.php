@@ -235,6 +235,7 @@ class Api
     public function getProduct($id) {
         $product_data = $this->ApiCall('inventory/' . $id, '', 'GET');
         $product = new Product();
+        var_dump($product_data);
         return $product->fillData($product_data);
     }
 

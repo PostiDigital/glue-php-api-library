@@ -113,6 +113,11 @@ class Product
      * @var bool
      */
     private $is_oversized = false;
+    
+    /*
+     * @var mixed
+     */
+    private $specifications;
 
     /*
      * @param string $external_id
@@ -211,6 +216,9 @@ class Product
 
     public function setEan($ean) {
         $this->ean = $ean;
+        if (!$this->sku) {
+            $this->sku = $ean;
+        }
         return $this;
     }
 
@@ -455,6 +463,24 @@ class Product
     public function getIsOversized() {
         return $this->is_oversized;
     }
+    
+    /*
+     * @param mixed $specifications
+     * @return Product
+     */
+
+    public function setSpecifications($specifications) {
+        $this->specifications = $specifications;
+        return $this;
+    }
+
+    /*
+     * @return mixed
+     */
+
+    public function getSpecifications() {
+        return $this->specifications;
+    }
 
     /*
      * @param array $data
@@ -492,6 +518,8 @@ class Product
         $this->setLength($data['product']['measurements']['length'] ?? null);
         $this->setWidth($data['product']['measurements']['width'] ?? null);
         $this->setWeight($data['product']['measurements']['weight'] ?? null);
+        
+        $this->setSpecifications($data['product']['descriptions']['en']['specifications'] ?? null);
         
         return $this;
     }
@@ -537,6 +565,10 @@ class Product
             "width" => $this->width,
             "height" => $this->height,
         );
+        
+        if ($this->specifications) {
+            $product['descriptions']['en']['specifications'] = $this->specifications;
+        }
 
         $balances = array(
             array(

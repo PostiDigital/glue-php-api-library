@@ -23,7 +23,7 @@ try {
     $product->setIsOversized(false);
     
     $product->setCurrency("EUR");
-    $product->setPrice(10.5);
+    $product->setPrice(10.6);
     $product->setWholesalePrice(10.6);
     
     $product->setEan("TEST-0123456789");
@@ -32,6 +32,19 @@ try {
     $product->setLength(0.1); //m
     $product->setWidth(0.2); //m
     $product->setWeight(0.4); //kg
+    
+    $specification = array([
+        "type"=> "Options",
+        "properties"=> [
+            [
+                "name" => "color",
+                "value"=> "black",
+                "specifier" => "",
+                "description" => ""
+            ]
+        ]
+    ]);
+    $product->setSpecifications($specification);
     
     $api = new Api($username, $password, $business_id, $contract_number, true);
     $api->setDebug(true, "../debug.log");
