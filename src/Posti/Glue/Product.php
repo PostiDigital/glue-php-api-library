@@ -15,6 +15,7 @@ class Product
         'wholesale_price',
         'sku',
         'quantity',
+        'specifications',
     ];
     
     /*
