@@ -2,7 +2,7 @@
 
 namespace Posti\Glue;
 
-use PostiWarehouse\Classes\Dataset;
+use Posti\Glue\Attachment;
 
 class Product
 {
@@ -16,6 +16,7 @@ class Product
         'sku',
         'quantity',
         'specifications',
+        'attachments',
     ];
     
     /*
@@ -119,6 +120,11 @@ class Product
      * @var mixed
      */
     private $specifications;
+    
+    /*
+     * @var array
+     */
+    private $attachments = [];
 
     /*
      * @param string $external_id
@@ -482,6 +488,24 @@ class Product
     public function getSpecifications() {
         return $this->specifications;
     }
+    
+    /*
+     * @param Attachment $attachments
+     * @return Product
+     */
+
+    public function addAttachment(Attachment $attachment) {
+        $this->attachments[] = $attachment;
+        return $this;
+    }
+
+    /*
+     * @return mixed
+     */
+
+    public function getAttachments() {
+        return $this->attachments;
+    }
 
     /*
      * @param array $data
@@ -546,7 +570,8 @@ class Product
             'descriptions' => array(
                 'en' => array(
                     'name' => $this->name,
-                    'description' => $this->description
+                    'description' => $this->description,
+                    'attachments' => []
                 )
             ),
             'eanCode' => $this->ean, //$_product->get_sku(),
@@ -559,6 +584,12 @@ class Product
             "isDangerousGoods" => $this->is_dangerous,
             "isOversized" => $this->is_oversized,
         );
+        
+        if (!empty($this->attachments)) {
+            foreach ($this->attachments as $attachment) {
+                $product['descriptions']['en']['attachments'][] = $attachment->getData();
+            }
+        }
 
         $product['measurements'] = array(
             "weight" => $this->weight,
