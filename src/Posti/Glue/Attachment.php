@@ -117,7 +117,7 @@ class Attachment
 
         return [
             "name" => $this->name,
-            "type" => $this->name,
+            "type" => $this->type,
             "contentType" => $this->content_type,
             "uri" => $this->uri
         ];
