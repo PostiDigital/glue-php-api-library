@@ -11,9 +11,9 @@ use Posti\Glue\Api;
 try {
     $api = new Api($username, $password, $business_id, $contract_number, true);
     $api->setDebug(true, "../debug.log");
-    $products = $api->getProductsByWarehouse($warehouse_id);
+    $balances = $api->getBalances();
     echo '<pre>';
-    print_r($products);
+    var_dump($balances);
     echo '</pre>';
 
 } catch (\Exception $ex)  {

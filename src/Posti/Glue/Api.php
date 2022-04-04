@@ -59,6 +59,18 @@ class Api
      */
     
     private $last_status = false;
+    
+    /*
+     * @var string
+     */
+    
+    private $auth_url = null;
+    
+    /*
+     * @var string
+     */
+    
+    private $api_url = null;
 
     /*
      * @param string $username
@@ -98,12 +110,26 @@ class Api
     public function getLastStatus() {
         return $this->last_status;
     }
+    
+    
+    /*
+     * @param string $url
+     * @return Api
+     */
+
+    public function setApiUrl($url) {
+        $this->api_url = $url;
+        return $this;
+    }
 
     /*
      * @return string
      */
     
     private function getApiUrl() {
+        if ($this->api_url) {
+            return $this->api_url;
+        }
         if ($this->test) {
             return "https://argon.ecom-api.posti.com/ecommerce/v3/";
         }
@@ -117,12 +143,25 @@ class Api
     public function getBusinessId() {
         return $this->business_id;
     }
+    
+    /*
+     * @param string $url
+     * @return Api
+     */
+
+    public function setAuthUrl($url) {
+        $this->auth_url = $url;
+        return $this;
+    }
 
     /*
      * @return string
      */
     
     private function getAuthUrl() {
+        if ($this->auth_url) {
+            return $this->auth_url;
+        }
         if ($this->test) {
             return "https://oauth2.barium.posti.com";
         }
@@ -173,17 +212,18 @@ class Api
      * @retrun mixed
      */
     
-    private function ApiCall($url, $data = '', $action = 'GET') {
+    private function ApiCall($input_url, $input_data = '', $action = 'GET', $page = 0) {
         if (!$this->token) {
             $this->getToken();
         }
-
         $env = $this->test ? "TEST " : "PROD ";
         $curl = curl_init();
         $header = array();
 
         $header[] = 'Authorization: Bearer ' . $this->token;
 
+        $data = $input_data;
+        $url = $input_url;
         if ($data) {
             $this->logger->log("info", $data);
         }
@@ -202,6 +242,13 @@ class Api
         }
         if ($action == "DELETE") {
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $action);
+        }
+        
+        if ($action == 'GET' && $page > 0) {
+            if (!is_array($data) && $data == '') {
+                $data = array();
+            }
+            $data['page'] = $page;
         }
         if ($action == "GET" && is_array($data)) {
             $url .= '?' . http_build_query($data);
@@ -227,7 +274,16 @@ class Api
             $this->logger->log("error", $env . " " . $action . "Request to: " . $url . "\nResponse code: " . $http_status . "\nResult: " . $result);
             return false;
         }
-        return json_decode($result, true);
+        $result_data = json_decode($result, true);
+        
+        $result_content = $result_data['content'] ?? $result_data;
+        if (isset($result_data['page']) && $result_data['page']['totalPages'] > ($page + 1)) {
+            $page_response = $this->ApiCall($input_url, $input_data, $action, $page+1);
+            if (!empty($page_response)) {
+                $result_content = array_merge($result_content, $page_response);
+            }
+        }
+        return $result_content;
     }
 
     /*
@@ -236,9 +292,7 @@ class Api
 
     public function getWarehouses() {
         $warehouses = $this->ApiCall('catalogs?role=RETAILER', '', 'GET');
-        if (is_array($warehouses) && isset($warehouses['content'])) {
-            $warehouses = $warehouses['content'];
-        } else {
+        if (!is_array($warehouses)) {
             $warehouses = array();
         }
 
@@ -262,10 +316,10 @@ class Api
      */
 
     public function getProductsByWarehouse($id, $attrs = '') {
-        $products_data = $this->ApiCall('catalogs/' . $id . '/products', $attrs, 'GET');
+        $products_data = $this->ApiCall('inventory?retailerId=' . $this->business_id . '&catalogExternalId=' . $id, $attrs, 'GET');
         $products = [];
-        if (is_array($products_data) && isset($products_data['content'])) {
-            foreach ($products_data['content'] as $data) {
+        if (is_array($products_data)) {
+            foreach ($products_data as $data) {
                 $product = new Product();
                 if ($product->fillData($data) === false) {
                     $this->logger->log("error", 'Failed to create product from: ' . json_encode($data));
@@ -292,6 +346,20 @@ class Api
         }
         $status = $this->ApiCall('inventory', $products_data, 'PUT');
         return $status;
+    }
+    
+    /*
+     * @param string $date
+     * @return mixed
+     */
+
+    public function getBalances($date = null) {
+        $data = [];
+        if ($date) {
+            $data['modifiedFromDate'] = date('c', strtotime($date));
+        }
+        $balances = $this->ApiCall('inventory/balances', $data, 'GET');
+        return $balances;
     }
 
     /*
