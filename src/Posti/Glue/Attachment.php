@@ -2,8 +2,6 @@
 
 namespace Posti\Glue;
 
-use PostiWarehouse\Classes\Dataset;
-
 class Attachment
 {
     /*

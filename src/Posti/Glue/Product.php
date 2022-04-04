@@ -3,6 +3,7 @@
 namespace Posti\Glue;
 
 use Posti\Glue\Attachment;
+use Posti\Glue\Image;
 
 class Product
 {
@@ -17,6 +18,7 @@ class Product
         'quantity',
         'specifications',
         'attachments',
+        'images',
     ];
     
     /*
@@ -125,6 +127,11 @@ class Product
      * @var array
      */
     private $attachments = [];
+    
+    /*
+     * @var array
+     */
+    private $images = [];
 
     /*
      * @param string $external_id
@@ -506,6 +513,24 @@ class Product
     public function getAttachments() {
         return $this->attachments;
     }
+    
+    /*
+     * @param Image $image
+     * @return Product
+     */
+
+    public function addImage(Image $image) {
+        $this->images[] = $image;
+        return $this;
+    }
+
+    /*
+     * @return mixed
+     */
+
+    public function getImages() {
+        return $this->images;
+    }
 
     /*
      * @param array $data
@@ -583,11 +608,18 @@ class Product
             "isFragile" => $this->is_fragile,
             "isDangerousGoods" => $this->is_dangerous,
             "isOversized" => $this->is_oversized,
+            "images" => []
         );
         
         if (!empty($this->attachments)) {
             foreach ($this->attachments as $attachment) {
                 $product['descriptions']['en']['attachments'][] = $attachment->getData();
+            }
+        }
+        
+        if (!empty($this->images)) {
+            foreach ($this->images as $image) {
+                $product['images'][] = $image->getData();
             }
         }
 
