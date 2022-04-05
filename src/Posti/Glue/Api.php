@@ -3,6 +3,8 @@
 namespace Posti\Glue;
 
 use Posti\Glue\Logger;
+use Posti\Glue\Product;
+use Posti\Glue\Catalog;
 
 class Api
 {
@@ -15,61 +17,51 @@ class Api
     /*
      * @var string
      */
-    
     private $password = null;
 
     /*
      * @var string
      */
-    
     private $token = null;
-    
+
     /*
      * @var string
      */
-    
     private $token_expire = null;
 
     /*
      * @var bool
      */
-    
     private $test = false;
 
     /*
      * @var string
      */
-    
     private $contract_number = null;
 
     /*
      * @var string
      */
-    
     private $business_id = null;
 
     /*
      * @var Logger
      */
-    
     private $logger;
 
     /*
      * @var string
      */
-    
     private $last_status = false;
-    
+
     /*
      * @var string
      */
-    
     private $auth_url = null;
-    
+
     /*
      * @var string
      */
-    
     private $api_url = null;
 
     /*
@@ -79,7 +71,7 @@ class Api
      * @param string $contract_number
      * @param bool $test_mode
      */
-    
+
     public function __construct($username, $password, $business_id, $contract_number, $test_mode = false) {
         $this->username = $username;
         $this->password = $password;
@@ -106,12 +98,11 @@ class Api
     /*
      * @return string
      */
-    
+
     public function getLastStatus() {
         return $this->last_status;
     }
-    
-    
+
     /*
      * @param string $url
      * @return Api
@@ -125,7 +116,7 @@ class Api
     /*
      * @return string
      */
-    
+
     private function getApiUrl() {
         if ($this->api_url) {
             return $this->api_url;
@@ -135,7 +126,7 @@ class Api
         }
         return "https://ecom-api.posti.com/ecommerce/v3/";
     }
-    
+
     /*
      * @return string
      */
@@ -143,7 +134,7 @@ class Api
     public function getBusinessId() {
         return $this->business_id;
     }
-    
+
     /*
      * @param string $url
      * @return Api
@@ -157,7 +148,7 @@ class Api
     /*
      * @return string
      */
-    
+
     private function getAuthUrl() {
         if ($this->auth_url) {
             return $this->auth_url;
@@ -172,7 +163,7 @@ class Api
      * @param string $token
      * @return Api
      */
-    
+
     public function setToken($token) {
         $this->token = $token;
         return $this;
@@ -181,9 +172,9 @@ class Api
     /*
      * @return mixed
      */
-    
+
     public function getToken() {
-        if($this->token) {
+        if ($this->token) {
             return $this->token;
         }
         $token_data = json_decode($this->getPostiToken($this->getAuthUrl() . "/oauth/token?grant_type=client_credentials", $this->username, $this->password));
@@ -196,11 +187,11 @@ class Api
         }
         return false;
     }
-    
+
     /*
      * @return mixed
      */
-    
+
     public function getTokenExpire() {
         return $this->token_expire;
     }
@@ -211,7 +202,7 @@ class Api
      * @param string $action
      * @retrun mixed
      */
-    
+
     private function ApiCall($input_url, $input_data = '', $action = 'GET', $page = 0) {
         if (!$this->token) {
             $this->getToken();
@@ -243,7 +234,7 @@ class Api
         if ($action == "DELETE") {
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $action);
         }
-        
+
         if ($action == 'GET' && $page > 0) {
             if (!is_array($data) && $data == '') {
                 $data = array();
@@ -275,10 +266,10 @@ class Api
             return false;
         }
         $result_data = json_decode($result, true);
-        
+
         $result_content = $result_data['content'] ?? $result_data;
         if (isset($result_data['page']) && $result_data['page']['totalPages'] > ($page + 1)) {
-            $page_response = $this->ApiCall($input_url, $input_data, $action, $page+1);
+            $page_response = $this->ApiCall($input_url, $input_data, $action, $page + 1);
             if (!empty($page_response)) {
                 $result_content = array_merge($result_content, $page_response);
             }
@@ -291,12 +282,28 @@ class Api
      */
 
     public function getWarehouses() {
-        $warehouses = $this->ApiCall('catalogs?role=RETAILER', '', 'GET');
-        if (!is_array($warehouses)) {
-            $warehouses = array();
-        }
+        return $this->getCatalogs();
+    }
 
-        return $warehouses;
+    /*
+     * @return mixed
+     */
+
+    public function getCatalogs() {
+        $catalogs_data = $this->ApiCall('catalogs?role=RETAILER', '', 'GET');
+        if (!is_array($catalogs_data)) {
+            $catalogs_data = array();
+        }
+        $catalogs = [];
+        foreach ($catalogs_data as $data) {
+            $catalog = new Catalog();
+            if ($catalog->fillData($data) === false) {
+                $this->logger->log("error", 'Failed to create catalog from: ' . json_encode($data));
+                continue;
+            }
+            $catalogs[] = $catalog;
+        }
+        return $catalogs;
     }
 
     /*
@@ -316,6 +323,15 @@ class Api
      */
 
     public function getProductsByWarehouse($id, $attrs = '') {
+        return $this->getProductsByCatalog($id, $attrs);
+    }
+
+    /*
+     * @param string $id
+     * @return mixed
+     */
+
+    public function getProductsByCatalog($id, $attrs = '') {
         $products_data = $this->ApiCall('inventory?retailerId=' . $this->business_id . '&catalogExternalId=' . $id, $attrs, 'GET');
         $products = [];
         if (is_array($products_data)) {
@@ -347,7 +363,7 @@ class Api
         $status = $this->ApiCall('inventory', $products_data, 'PUT');
         return $status;
     }
-    
+
     /*
      * @param string $date
      * @return mixed
@@ -374,7 +390,7 @@ class Api
         }
         return $status;
     }
-    
+
     /*
      * @param string $order
      * @return mixed
@@ -397,7 +413,7 @@ class Api
         $status = $this->ApiCall('orders/' . $order_id, '', 'GET');
         return $status;
     }
-    
+
     /*
      * @param string $order_id
      * @return mixed
@@ -414,6 +430,7 @@ class Api
      * @param $secret
      * @return bool|string
      */
+
     private function getPostiToken($url, $user, $secret) {
         $headers = array();
 

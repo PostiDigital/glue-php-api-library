@@ -10,8 +10,11 @@ use Posti\Glue\Api;
 
 try {
     $api = new Api($username, $password, $business_id, $contract_number, true);
-    $warehouses = $api->getWarehouses();
-    var_dump($warehouses);
+    $catalogs = $api->getCatalogs();
+    foreach ($catalogs as $catalog) {
+        echo $catalog->getExternalId() . ', ' . $catalog->getCatalogName();
+        break;
+    }
 
 } catch (\Exception $ex)  {
     echo $ex->getMessage();
