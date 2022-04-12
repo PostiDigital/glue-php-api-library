@@ -9,7 +9,7 @@ If your business does not have a Posti service account, contact Posti Customer S
 ## Features
 
 - Creating and getting a proruct
-- Creating and getting a order
+- Creating and getting an order
 - List all warehouses
 
 ## Instalation
