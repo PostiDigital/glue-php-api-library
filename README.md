@@ -1,13 +1,16 @@
 # Posti Glue Api library
 
-Posti Glue Api library, to help to integrate with other systems 
+Posti Glue Api library, to help to integrate with other systems. See https://api.posti.fi for GLUE API documentation.
+
+## How to get Posti service account
+
+If your business does not have a Posti service account, contact Posti Customer Service to get one. Note that you also need a contract with Posti.
 
 ## Features
 
-- Product creating, getting
-- Order creating, getting
-- Warehouses listing
-
+- Creating and getting a proruct
+- Creating and getting a order
+- List all warehouses
 
 ## Instalation
 
