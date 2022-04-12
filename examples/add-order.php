@@ -29,7 +29,7 @@ try {
     $sender->setCity('City');
     $sender->setCountry('LT');
     $sender->setTelephone('+37060000000');
-    $sender->setEmail('noreply@example.org');
+    $sender->setEmail('noreply@example.invalid');
     
     $order->setSender($sender);
     
@@ -41,7 +41,7 @@ try {
     $receiver->setCity('City');
     $receiver->setCountry('LT');
     $receiver->setTelephone('+37060000000');
-    $receiver->setEmail('noreply@example.org');
+    $receiver->setEmail('noreply@example.invalid');
     
     $order->setReceiver($receiver);
     
