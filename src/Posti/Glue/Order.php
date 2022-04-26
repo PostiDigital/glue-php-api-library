@@ -4,6 +4,7 @@ namespace Posti\Glue;
 
 use Posti\Glue\Order\Address;
 use Posti\Glue\Order\Item;
+use Posti\Glue\Order\Reference;
 
 class Order
 {
@@ -79,6 +80,11 @@ class Order
      * @var array
      */
     private $items = [];
+    
+    /*
+     * @var array
+     */
+    private $references = [];
     
     /*
      * @return string
@@ -316,6 +322,16 @@ class Order
         $this->items[] = $item;
         return $this;
     }
+    
+    /*
+     * @param Reference $item
+     * @return Order
+     */
+    
+    public function addReference(Reference $reference) {
+        $this->references[] = $reference;
+        return $this;
+    }
 
     /*
      * @return array
@@ -378,6 +394,7 @@ class Order
             "metadata" => [
                 "documentType" => "SalesOrder"
             ],
+            "references" => [],
             "vendor" => [
                 "name" => $this->sender->getName(),
                 "streetAddress" => $this->sender->getStreet(),
@@ -442,6 +459,11 @@ class Order
           } */
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
+        }
+        
+        //add references
+        foreach ($this->references as $reference) {
+            $order["references"][] = $reference->toArray();
         }
 
         return $order;
