@@ -35,6 +35,11 @@ class Api
     private $test = false;
 
     /*
+     * @var bool
+     */
+    private $system_account = false;
+
+    /*
      * @var string
      */
     private $contract_number = null;
@@ -72,14 +77,18 @@ class Api
      * @param bool $test_mode
      */
 
-    public function __construct($username, $password, $business_id, $contract_number, $test_mode = false) {
+    public function __construct($username, $password, $business_id, $contract_number, $test_mode = false, $system_account = false) {
         $this->username = $username;
         $this->password = $password;
         $this->business_id = $business_id;
         $this->contract_number = $contract_number;
 
         if ($test_mode) {
-            $this->test = true;
+            $this->test = $test_mode;
+        }
+        
+        if ($system_account) {
+            $this->system_account = $system_account;
         }
 
         $this->logger = new Logger();
@@ -212,7 +221,12 @@ class Api
         $header = array();
 
         $header[] = 'Authorization: Bearer ' . $this->token;
-
+        
+        if ($this->system_account) {
+            $header[] = 'Client-Roles: ROLE_ap_ecommerce_api_retailer,ROLE_ap_ecommerce_api_supplier';
+            $header[] = 'Client-Id: ' . $this->business_id;
+        }
+        
         $data = $input_data;
         $url = $input_url;
         if ($data) {
@@ -375,6 +389,20 @@ class Api
             $data['modifiedFromDate'] = date('c', strtotime($date));
         }
         $balances = $this->ApiCall('inventory/balances', $data, 'GET');
+        return $balances;
+    }
+
+    /*
+     * @param string $date
+     * @return mixed
+     */
+
+    public function getCatalogBalances($catalog_id, $date = null) {
+        $data = [];
+        if ($date) {
+            $data['modifiedFromDate'] = date('c', strtotime($date));
+        }
+        $balances = $this->ApiCall('catalogs/' . $catalog_id . '/balances', $data, 'GET');
         return $balances;
     }
 
