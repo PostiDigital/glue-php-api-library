@@ -506,5 +506,27 @@ class Order
         }
         return $name;
     }
-
+    
+    /*
+     * @param array $data
+     * @return Order
+     */
+    //TO DO: make clever way of filling Object to array
+    /*
+    public function fillData($data) {
+        if (!is_array($data)) {
+            return false;
+        }
+        $this->setExternalId($data['externalId'] ?? null);
+        $this->setCatalogType($data['catalogType'] ?? null);
+        $this->setCatalogName($data['catalogName'] ?? null);
+        $this->setSupplierId($data['supplierId'] ?? null);
+        $this->setRetailerId($data['retailerId'] ?? null);
+        $this->setBackOrderAllowed($data['backOrderAllowed'] ?? null);
+        $this->setPriority($data['priority'] ?? null);
+        $this->setRouteWeight($data['routeWeight'] ?? null);
+        $this->setPublic($data['public'] ?? null);
+        return $this;
+    }
+    */
 }

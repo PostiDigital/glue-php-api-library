@@ -393,6 +393,7 @@ class Api
     }
 
     /*
+     * @param string $catalog_id
      * @param string $date
      * @return mixed
      */
@@ -405,9 +406,68 @@ class Api
         $balances = $this->ApiCall('catalogs/' . $catalog_id . '/balances', $data, 'GET');
         return $balances;
     }
+    
+    /*
+     * @param string $catalog_id
+     * @param string $date
+     * @return mixed
+     */
+
+    public function getCatalogOrders($catalog_id, $date = null) {
+        $data = [
+            'warehouseExternalId' => $catalog_id
+        ];
+        if ($date) {
+            $data['updatedFrom'] = date('c', strtotime($date));
+        }
+        $orders = [];
+        $response = $this->ApiCall('orders', $data, 'GET');
+        return $response;
+        //TODO: create Order objects from response data
+        /*
+        if (is_array($response)) {
+            foreach ($response as $item) {
+                $order = new Order();
+                $order->fillData($item);
+                $orders[] = $order;
+            }
+            return $response;
+        }
+        return $response;
+         * 
+         */
+    }
+    
+    /*
+     * @param string $catalog_id
+     * @param string $date
+     * @return mixed
+     */
+
+    public function getCatalogOrdersStatuses($catalog_id, $date = null) {
+        $data = [
+            'warehouseExternalId' => $catalog_id
+        ];
+        if ($date) {
+            $data['updatedFrom'] = date('c', strtotime($date));
+        }
+        $statuses = [];
+        $response = $this->ApiCall('orders', $data, 'GET');
+        if (is_array($response)) {
+            foreach ($response as $order_data) {
+                $statuses[] = [
+                    'externalId' => $order_data['externalId'],
+                    'clientId' => $order_data['clientId'],
+                    'status' => $order_data['status']['value'] ?? null,
+                ];
+            }
+            return $statuses;
+        }
+        return $response;
+    }
 
     /*
-     * @param string $order
+     * @param Order $order
      * @return mixed
      */
 
@@ -420,7 +480,7 @@ class Api
     }
 
     /*
-     * @param string $order
+     * @param Order $order
      * @return mixed
      */
 
