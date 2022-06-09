@@ -41,7 +41,7 @@ class Logger
     public function log($type, $message) {
         if ($this->debug) {
             if ($this->closure !== null) {
-                call_user_func($this->closure, $message);
+                call_user_func($this->closure, $message, $type);
             } else {
                 error_log(date('Y-m-d H:i:s') . ' ' . $type . ' - ' . print_r($message, true), 3, $this->file);
             }

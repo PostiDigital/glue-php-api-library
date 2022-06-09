@@ -12,7 +12,7 @@ try {
     $api = new Api($username, $password, $business_id, $contract_number, true);
     $api->setDebug(true, "../debug.log");
     //log to function
-    //$api->setDebug(true, static function($message) { var_dump($message); });
+    //$api->setDebug(true, static function($message, $type) { var_dump($type . ' ' . $message ); });
     $balances = $api->getBalances();
     echo '<pre>';
     var_dump($balances);
