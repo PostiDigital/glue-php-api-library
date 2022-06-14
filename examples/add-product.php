@@ -13,6 +13,7 @@ try {
     $product = new Product();
     $product->setWarehouse($warehouse_id);
     $product->setBusinessId($business_id);
+    //$product->setSupplierId("");
     $product->setDistributor($distributor_id);
     
     $product->setName("Api test product");

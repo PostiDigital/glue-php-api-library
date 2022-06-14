@@ -617,7 +617,6 @@ class Product
         }
         $product = array(
             'externalId' => $this->external_id,
-            "supplierId" => $this->supplier_id,
             'descriptions' => array(
                 'en' => array(
                     'name' => $this->name,
@@ -636,6 +635,10 @@ class Product
             "isOversized" => $this->is_oversized,
             "images" => []
         );
+        if ($this->supplier_id !== null) {
+            $product["supplierId"] = $this->supplier_id;
+        }
+            
         
         if (!empty($this->attachments)) {
             foreach ($this->attachments as $attachment) {
