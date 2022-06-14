@@ -13,6 +13,7 @@ class Product
     
     protected $optional = [
         'external_id',
+        'supplier_id',
         'wholesale_price',
         'sku',
         'quantity',
@@ -26,6 +27,13 @@ class Product
      */
 
     private $external_id;
+    
+    
+    /*
+     * @var string
+     */
+
+    private $supplier_id;
     
     /*
      * @var string
@@ -149,6 +157,24 @@ class Product
 
     public function getExternalId() {
         return $this->external_id;
+    }
+
+    /*
+     * @param string $supplier_id
+     * @return Product
+     */
+
+    public function setSupplierId($supplier_id) {
+        $this->supplier_id = $supplier_id;
+        return $this;
+    }
+    
+    /*
+     * @return string
+     */
+
+    public function getSupplierId() {
+        return $this->supplier_id;
     }
     
     /*
@@ -590,8 +616,8 @@ class Product
             $this->wholesale_price = (float) $this->price;
         }
         $product = array(
-            'externalId' => $posti_product_id,
-            "supplierId" => $this->business_id,
+            'externalId' => $this->external_id,
+            "supplierId" => $this->supplier_id,
             'descriptions' => array(
                 'en' => array(
                     'name' => $this->name,
