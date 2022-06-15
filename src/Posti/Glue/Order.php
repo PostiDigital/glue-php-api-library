@@ -13,7 +13,9 @@ class Order
      */
 
     protected $optional = [
-        'routing_service'
+        'routing_service',
+        'prefix',
+        'use_prefix',
     ];
 
     /*
@@ -40,6 +42,16 @@ class Order
      * @var string
      */
     private $total_tax;
+    
+    /*
+     * @var string
+     */
+    private $prefix;
+    
+    /*
+     * @var bool
+     */
+    private $use_prefix = true;
 
     /*
      * @var string
@@ -91,7 +103,7 @@ class Order
      */
 
     public function getExternalId() {
-        return $this->getBusinessId() . '-' . $this->getId();
+        return $this->getPrefix() . $this->getId();
     }
 
     /*
@@ -110,6 +122,49 @@ class Order
 
     public function getId() {
         return $this->id;
+    }
+
+    /*
+     * @param bool $use_prefix
+     * @return Order
+     */
+
+    public function setUsePrefix($use_prefix) {
+        $this->use_prefix = $use_prefix;
+        return $this;
+    }
+
+    /*
+     * @return bool
+     */
+
+    public function getUsePrefix() {
+        return $this->use_prefix;
+    }
+
+    /*
+     * @param string $prefix
+     * @return Order
+     */
+
+    public function setPrefix($prefix) {
+        $this->prefix = $prefix;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getPrefix() {
+        if ($this->getUsePrefix() !== true) {
+            return "";
+        }
+        if ($this->prefix) {
+            return $this->prefix;
+        } else {
+            return $this->getBusinessId() . '-';
+        }
     }
 
     /*
@@ -369,7 +424,6 @@ class Order
         foreach ($this->additional_services as $_service) {
             $additional_services[] = ["serviceCode" => (string) $_service];
         }
-        $business_id = $this->business_id;
         $order_items = array();
 
         $item_counter = 1;
@@ -385,7 +439,7 @@ class Order
             ];
             $item_counter++;
         }
-        $posti_order_id = $this->getBusinessId() . '-' . $this->getId();
+        $posti_order_id = $this->getPrefix() . $this->getId();
 
         $order = array(
             "externalId" => $posti_order_id,
@@ -412,7 +466,7 @@ class Order
                 "email" => $this->sender->getEmail()
             ],
             "client" => [
-                "externalId" => $this->getBusinessId() . "-" . $this->receiver->getId(),
+                "externalId" => $this->getPrefix() . $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
                 "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
@@ -422,7 +476,7 @@ class Order
                 "email" => $this->receiver->getEmail(),
             ],
             "recipient" => [
-                "externalId" => $this->getBusinessId() . "-" . $this->receiver->getId(),
+                "externalId" => $this->getPrefix() . $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
                 "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
@@ -432,7 +486,7 @@ class Order
                 "email" => $this->receiver->getEmail(),
             ],
             "deliveryAddress" => [
-                "externalId" => $this->getBusinessId() . "-" . $this->delivery->getId(),
+                "externalId" => $this->getPrefix() . $this->delivery->getId(),
                 "name" => $this->delivery->getName(),
                 "streetAddress" => $this->delivery->getStreet(),
                 "postalCode" => $this->delivery->getPostcode(),
