@@ -140,6 +140,11 @@ class Product
      * @var array
      */
     private $images = [];
+    
+    /*
+     * @var bool
+     */
+    private $send_balances = true;
 
     /*
      * @param string $external_id
@@ -559,6 +564,24 @@ class Product
     }
 
     /*
+     * @param bool $send_balances
+     * @return Product
+     */
+
+    public function setSendBalances($send_balances) {
+        $this->send_balances = $send_balances;
+        return $this;
+    }
+
+    /*
+     * @return bool
+     */
+
+    public function getSendBalances() {
+        return $this->send_balances;
+    }
+
+    /*
      * @param array $data
      * @return Product
      */
@@ -674,7 +697,11 @@ class Product
             )
         );
 
-        return array('product' => $product, 'balances' => $balances);
+        if ($this->send_balances === true) {
+            return array('product' => $product, 'balances' => $balances);
+        } else {
+            return array('product' => $product);
+        }
     }
 
     /*
