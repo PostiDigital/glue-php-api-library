@@ -97,7 +97,9 @@ class Order
      * @var array
      */
     private $references = [];
-    
+
+    private $useBusinessId = true;
+
     /*
      * @return string
      */
@@ -396,6 +398,17 @@ class Order
         return $this->items;
     }
 
+    /**
+     * @param bool $useBusinessId
+     */
+    public function setUseBusinessId(bool $useBusinessId) {
+        $this->useBusinessId = $useBusinessId;
+    }
+
+    public function getUseBusinessId() {
+        return $this->useBusinessId;
+    }
+
     public static function calculate_reference($id) {
         $weights = array(7, 3, 1);
         $sum = 0;
@@ -443,7 +456,6 @@ class Order
 
         $order = array(
             "externalId" => $posti_order_id,
-            "clientId" => (string) $this->getBusinessId(),
             "orderDate" => date('Y-m-d\TH:i:s.vP', strtotime((string) $this->getOrderDate())),
             "metadata" => [
                 "documentType" => "SalesOrder"
@@ -511,6 +523,11 @@ class Order
           $order['deliveryAddress'] = $address;
           }
           } */
+
+        if ($this->getUseBusinessId()) {
+            $order["clientId"] = (string) $this->getBusinessId();
+        }
+
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
         }
