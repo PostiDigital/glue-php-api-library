@@ -23,7 +23,7 @@ class Order
     /*
      * @var string
      */
-    private $business_id;
+    private $business_id = null;
 
     /*
      * @var string
@@ -373,7 +373,6 @@ class Order
 
         $order = array(
             "externalId" => $posti_order_id,
-            "clientId" => (string) $this->getBusinessId(),
             "orderDate" => date('Y-m-d\TH:i:s.vP', strtotime((string) $this->getOrderDate())),
             "metadata" => [
                 "documentType" => "SalesOrder"
@@ -440,6 +439,10 @@ class Order
           $order['deliveryAddress'] = $address;
           }
           } */
+        if (!empty($this->getBusinessId())) {
+            $order["clientId"] = (string)$this->getBusinessId();
+        }
+
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
         }
