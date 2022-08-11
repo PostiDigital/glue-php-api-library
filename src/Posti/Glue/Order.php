@@ -23,7 +23,7 @@ class Order
     /*
      * @var string
      */
-    private $business_id = null;
+    private $business_id;
 
     /*
      * @var string
@@ -83,6 +83,8 @@ class Order
     /*
      * @return string
      */
+
+    private $useBusinessId = true;
 
     public function getExternalId() {
         return $this->getBusinessId() . '-' . $this->getId();
@@ -325,6 +327,16 @@ class Order
         return $this->items;
     }
 
+    /**
+     * @param bool $useBusinessId
+     */
+    public function setUseBusinessId(bool $useBusinessId) {
+        $this->useBusinessId = $useBusinessId;
+    }
+
+    public function getUseBusinessId() {
+        return $this->useBusinessId;
+    }
     public static function calculate_reference($id) {
         $weights = array(7, 3, 1);
         $sum = 0;
@@ -345,7 +357,6 @@ class Order
     }
 
     public function getData() {
-
         $this->validate();
 
         $additional_services = [];
@@ -439,8 +450,8 @@ class Order
           $order['deliveryAddress'] = $address;
           }
           } */
-        if (!empty($this->getBusinessId())) {
-            $order["clientId"] = (string)$this->getBusinessId();
+        if ($this->getUseBusinessId()) {
+            $order["clientId"] = (string) $this->getBusinessId();
         }
 
         if (!empty($additional_services)) {
