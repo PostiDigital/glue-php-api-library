@@ -267,16 +267,16 @@ class Api
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        $this->logger->log("info", $env . " " . $action . " Request to: " . $url . "\nResponse: " . json_encode($result));
+        $this->logger->log("info", $env . " " . $action . " Request to: " . $this->getApiUrl() . $url . "\nResponse: " . $result);
 
         if (!$result) {
-            $this->logger->log("error", $http_status . ' - response from ' . $url . ': ' . $result);
+            $this->logger->log("error", $http_status . ' - response from ' . $this->getApiUrl() . $url . ': ' . $result);
             return false;
         }
 
 
         if ($http_status != 200) {
-            $this->logger->log("error", $env . " " . $action . "Request to: " . $url . "\nResponse code: " . $http_status . "\nResult: " . $result);
+            $this->logger->log("error", $env . " " . $action . "Request to: " . $this->getApiUrl() . $url . "\nResponse code: " . $http_status . "\nResult: " . $result);
             return false;
         }
         $result_data = json_decode($result, true);
