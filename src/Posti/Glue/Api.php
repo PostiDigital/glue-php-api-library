@@ -259,7 +259,7 @@ class Api
             $url .= '?' . http_build_query($data);
         }
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-
+        curl_setopt($curl, CURLOPT_ENCODING , "gzip");
         curl_setopt($curl, CURLOPT_URL, $this->getApiUrl() . $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
