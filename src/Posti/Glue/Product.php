@@ -12,6 +12,7 @@ class Product
      */
     
     protected $optional = [
+        'warehouse',
         'external_id',
         'supplier_id',
         'wholesale_price',
