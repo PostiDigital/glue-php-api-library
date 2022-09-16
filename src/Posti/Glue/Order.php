@@ -100,6 +100,8 @@ class Order
 
     private $useBusinessId = true;
 
+    private $deliveryOperator = 'Posti';
+
     /*
      * @return string
      */
@@ -369,7 +371,21 @@ class Order
     public function getDelivery() {
         return $this->delivery;
     }
-    
+
+    /**
+     * @return Order
+     */
+    public function setDeliveryOperator($deliveryOperator) {
+        $this->deliveryOperator = $deliveryOperator;
+        return $this;
+    }
+
+    /**
+     * @return string Delivery Operator
+     */
+    public function getDeliveryOperator() {
+        return $this->deliveryOperator;
+    }
     /*
      * @param Item $item
      * @return Order
@@ -513,7 +529,7 @@ class Order
             "totalPrice" => $this->getTotalPrice(),
             "totalTax" => $this->getTotalTax(),
             "totalWholeSalePrice" => $this->getTotalPrice() + $this->getTotalTax(),
-            "deliveryOperator" => "Posti",
+            "deliveryOperator" => $this->getDelivery(),
             "rows" => $order_items
         );
         /*
