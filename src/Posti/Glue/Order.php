@@ -529,7 +529,7 @@ class Order
             "totalPrice" => $this->getTotalPrice(),
             "totalTax" => $this->getTotalTax(),
             "totalWholeSalePrice" => $this->getTotalPrice() + $this->getTotalTax(),
-            "deliveryOperator" => $this->getDelivery(),
+            "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
         /*
