@@ -532,6 +532,7 @@ class Order
             "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
+
         /*
           if ($pickup_point) {
           $address = $this->pickupPointData($pickup_point, $_order, $business_id);
