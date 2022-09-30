@@ -262,16 +262,31 @@ class Api
         curl_setopt($curl, CURLOPT_ENCODING , "");
         curl_setopt($curl, CURLOPT_URL, $this->getApiUrl() . $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $headers='';
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+            function($curl, $header) use (&$headers)
+            {
+                $len = strlen($header);
+                $header = explode(':', $header, 2);
+                if (count($header) < 2) // ignore invalid headers
+                    return $len;
+
+                $headers[strtolower(trim($header[0]))][] = trim($header[1]);
+
+                return $len;
+            }
+        );
 
         $result = curl_exec($curl);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        $this->logger->log('info', sprintf("Request: %s\n%s %s\nHeaders\n%s\nResponse:\n%s",
+        $this->logger->log('info', sprintf("Request: %s\n%s %s\nHeaders\n%s\nResponse Headers:\n%\nResponse:\n%s",
             $this->getApiUrl() . $url,
             $action,
             $url,
             json_encode($header),
+            json_encode($headers),
             base64_encode($result),
         ));
         $this->logger->log("info", $env . " " . $action . " Request to: " . $this->getApiUrl() . $url . "\nResponse: " . $result);
