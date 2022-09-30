@@ -267,6 +267,13 @@ class Api
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
+        $this->logger->log('info', sprintf("Request: %s\n%s %s\nHeaders\n%s\nResponse:\n%s",
+            $this->getApiUrl() . $url,
+            $action,
+            $url,
+            json_encode($header),
+            base64_encode($result),
+        ));
         $this->logger->log("info", $env . " " . $action . " Request to: " . $this->getApiUrl() . $url . "\nResponse: " . $result);
 
         if (!$result) {
