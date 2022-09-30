@@ -263,7 +263,7 @@ class Api
         curl_setopt($curl, CURLOPT_URL, $this->getApiUrl() . $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $headers='';
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+        curl_setopt($curl, CURLOPT_HEADERFUNCTION,
             function($curl, $header) use (&$headers)
             {
                 $len = strlen($header);
