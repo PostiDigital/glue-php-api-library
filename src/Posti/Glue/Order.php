@@ -436,7 +436,7 @@ class Order
             ],
             "currency" => $this->getCurrency(),
             "serviceCode" => $this->getService(),
-            "routingServiceCode" => $this->getRoutingService(),
+            "pickupPointId" => $this->getRoutingService(),
             "totalPrice" => $this->getTotalPrice(),
             "totalTax" => $this->getTotalTax(),
             "totalWholeSalePrice" => $this->getTotalPrice() + $this->getTotalTax(),
