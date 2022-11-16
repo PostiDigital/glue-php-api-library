@@ -16,6 +16,7 @@ class Order
         'routing_service',
         'prefix',
         'use_prefix',
+        'pickup_point_id'
     ];
 
     /*
@@ -62,6 +63,11 @@ class Order
      * @var string
      */
     private $routing_service;
+
+    /*
+     * @var int
+     */
+    private $pickup_point_id;
 
     /*
      * @var array
@@ -277,6 +283,24 @@ class Order
 
     public function getRoutingService() {
         return $this->routing_service;
+    }
+
+    /*
+     * @param string $pickup_point_id
+     * @return Order
+     */
+
+    public function setPickupPointId($pickup_point_id) {
+        $this->pickup_point_id = $pickup_point_id;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getPickupPointId() {
+        return $this->pickup_point_id;
     }
 
     /*
@@ -526,6 +550,7 @@ class Order
             "currency" => $this->getCurrency(),
             "serviceCode" => $this->getService(),
             "routingServiceCode" => $this->getRoutingService(),
+            "pickupPointId" => $this->getPickupPointId(),
             "totalPrice" => $this->getTotalPrice(),
             "totalTax" => $this->getTotalTax(),
             "totalWholeSalePrice" => $this->getTotalPrice() + $this->getTotalTax(),
