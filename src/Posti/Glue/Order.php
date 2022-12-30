@@ -43,12 +43,12 @@ class Order
      * @var string
      */
     private $total_tax;
-    
+
     /*
      * @var string
      */
     private $prefix;
-    
+
     /*
      * @var bool
      */
@@ -93,12 +93,12 @@ class Order
      * @var Address
      */
     private $delivery;
-    
+
     /*
      * @var array
      */
     private $items = [];
-    
+
     /*
      * @var array
      */
@@ -414,17 +414,17 @@ class Order
      * @param Item $item
      * @return Order
      */
-    
+
     public function addItem(Item $item) {
         $this->items[] = $item;
         return $this;
     }
-    
+
     /*
      * @param Reference $item
      * @return Order
      */
-    
+
     public function addReference(Reference $reference) {
         $this->references[] = $reference;
         return $this;
@@ -553,7 +553,7 @@ class Order
             "pickupPointId" => $this->getPickupPointId(),
             "totalPrice" => $this->getTotalPrice(),
             "totalTax" => $this->getTotalTax(),
-            "totalWholeSalePrice" => $this->getTotalPrice() + $this->getTotalTax(),
+            "totalWholeSalePrice" => round($this->getTotalPrice() + $this->getTotalTax(), 2),
             "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
@@ -573,7 +573,7 @@ class Order
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
         }
-        
+
         //add references
         foreach ($this->references as $reference) {
             $order["references"][] = $reference->toArray();
@@ -619,7 +619,7 @@ class Order
         }
         return $name;
     }
-    
+
     /*
      * @param array $data
      * @return Order
