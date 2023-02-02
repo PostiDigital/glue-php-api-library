@@ -146,6 +146,27 @@ class Product
      */
     private $send_balances = true;
 
+    /**
+     * @var float
+     */
+    private $incoming = null;
+
+    /**
+     * @return float|null
+     */
+    public function getIncoming()
+    {
+        return $this->incoming;
+    }
+
+    /**
+     * @param float|null $incoming
+     */
+    public function setIncoming($incoming)
+    {
+        $this->incoming = $incoming;
+    }
+
     /*
      * @param string $external_id
      * @return Product
@@ -610,6 +631,7 @@ class Product
         $this->setPrice($data['product']['recommendedRetailPrice'] ?? null);
         $this->setWholesalePrice($data['balance']['wholesalePrice'] ?? null);
         $this->setQuantity($data['balance']['quantity'] ?? null);
+        $this->setIncoming($data['balance']['incoming'] ?? null);
 
         $this->setEan($data['balance']['eanCode'] ?? null);
 
