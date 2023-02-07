@@ -86,7 +86,7 @@ class Api
         if ($test_mode) {
             $this->test = $test_mode;
         }
-        
+
         if ($system_account) {
             $this->system_account = $system_account;
         }
@@ -221,12 +221,12 @@ class Api
         $header = array();
 
         $header[] = 'Authorization: Bearer ' . $this->token;
-        
+
         if ($this->system_account) {
             $header[] = 'Client-Roles: ROLE_ap_ecommerce_api_retailer,ROLE_ap_ecommerce_api_supplier';
             $header[] = 'Client-Id: ' . $this->business_id;
         }
-        
+
         $data = $input_data;
         $url = $input_url;
         if ($data) {
@@ -387,6 +387,16 @@ class Api
     }
 
     /*
+     * @param string $productExternalId
+     * @return mixed
+     */
+
+     public function deleteProduct($productExternalId) {
+        $status = $this->ApiCall('inventory/balances' . $productExternalId, '', 'DELETE');
+        return $status;
+    }
+
+    /*
      * @param string $date
      * @return mixed
      */
@@ -414,7 +424,7 @@ class Api
         $balances = $this->ApiCall('catalogs/' . $catalog_id . '/balances', $data, 'GET');
         return $balances;
     }
-    
+
     /*
      * @param string $catalog_id
      * @param string $date
@@ -442,10 +452,10 @@ class Api
             return $response;
         }
         return $response;
-         * 
+         *
          */
     }
-    
+
     /*
      * @param string $catalog_id
      * @param string $date
