@@ -20,6 +20,7 @@ class Product
         'specifications',
         'attachments',
         'images',
+        'incoming',
     ];
     
     /*
