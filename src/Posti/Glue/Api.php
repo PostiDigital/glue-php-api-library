@@ -509,8 +509,13 @@ class Api
      * @return mixed
      */
 
-    public function updateOrder($order) {
-        $status = $this->ApiCall('orders/' . $order->getExternalId(), $order->getData(), 'PUT');
+    public function updateOrder($order, $data = null) {
+        if (is_object($order)) {
+            $status = $this->ApiCall('orders/' . $order->getExternalId(), $order->getData(), 'PUT');
+        } else {
+            $glue_order_id = $order;
+            $status = $this->ApiCall('orders/' . $glue_order_id, $data, 'PUT');
+        }
         if ($status !== false) {
             return $status['externalId'] ?? false;
         }
