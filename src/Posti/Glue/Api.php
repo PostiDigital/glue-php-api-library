@@ -249,6 +249,8 @@ class Api
             if (!empty($payload)) {
                 $header[] = 'Content-Type: application/json';
                 $header[] = 'Content-Length: ' . strlen($payload);
+
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
             }
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $action);
         }
