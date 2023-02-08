@@ -246,6 +246,10 @@ class Api
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         }
         if ($action == "DELETE") {
+            if (strlen($payload) > 0) {
+                $header[] = 'Content-Type: application/json';
+                $header[] = 'Content-Length: ' . strlen($payload);
+            }
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $action);
         }
 
@@ -392,8 +396,9 @@ class Api
      */
 
      public function deleteProduct($productExternalId) {
-        $status = $this->ApiCall('inventory/balances?productExternalId=' . $productExternalId, '', 'DELETE');
-        return $status;
+         $payload = [['product' => ['externalId' => $productExternalId, 'status' => 'EOS']]];
+         $status = $this->ApiCall('inventory', json_encode($payload), 'DELETE');
+         return $status;
     }
 
     /*
