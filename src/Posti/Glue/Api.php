@@ -229,13 +229,13 @@ class Api
 
         $data = $input_data;
         $url = $input_url;
+        $payload = null;
         if ($data) {
             $this->logger->log("info", $data);
+            $payload = json_encode($data);
         }
 
         if ($action == "POST" || $action == "PUT") {
-            $payload = json_encode($data);
-
             $header[] = 'Content-Type: application/json';
             $header[] = 'Content-Length: ' . strlen($payload);
             if ($action == "POST") {
@@ -246,7 +246,7 @@ class Api
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         }
         if ($action == "DELETE") {
-            if (strlen($payload) > 0) {
+            if (!$payload) {
                 $header[] = 'Content-Type: application/json';
                 $header[] = 'Content-Length: ' . strlen($payload);
             }
@@ -397,7 +397,7 @@ class Api
 
      public function deleteProduct($productExternalId) {
          $payload = [['product' => ['externalId' => $productExternalId, 'status' => 'EOS']]];
-         $status = $this->ApiCall('inventory', json_encode($payload), 'DELETE');
+         $status = $this->ApiCall('inventory', $payload, 'DELETE');
          return $status;
     }
 
