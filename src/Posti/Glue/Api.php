@@ -392,7 +392,7 @@ class Api
      */
 
      public function deleteProduct($productExternalId) {
-        $status = $this->ApiCall('inventory/balances' . $productExternalId, '', 'DELETE');
+        $status = $this->ApiCall('inventory/' . $productExternalId, '', 'DELETE');
         return $status;
     }
 
