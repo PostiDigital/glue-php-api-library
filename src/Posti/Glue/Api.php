@@ -229,7 +229,7 @@ class Api
 
         $data = $input_data;
         $url = $input_url;
-        $payload = null;
+        $payload = '';
         if ($data) {
             $this->logger->log("info", $data);
             $payload = json_encode($data);
@@ -246,7 +246,7 @@ class Api
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         }
         if ($action == "DELETE") {
-            if (!$payload) {
+            if (!empty($payload)) {
                 $header[] = 'Content-Type: application/json';
                 $header[] = 'Content-Length: ' . strlen($payload);
             }
