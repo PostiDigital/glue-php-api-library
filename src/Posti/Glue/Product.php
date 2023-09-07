@@ -21,7 +21,7 @@ class Product
         'attachments',
         'images',
         'incoming',
-		'business_id',
+        'business_id',
     ];
     
     /*
@@ -654,10 +654,10 @@ class Product
     public function getData() {
         $this->validate();
 
-		if ($this->business_id) {
-			$posti_product_id = $this->business_id . '-' . $this->sku;
-		} else 
-			$posti_product_id = $this->sku;
+        if ($this->business_id) {
+            $posti_product_id = $this->business_id . '-' . $this->sku;
+        } else 
+            $posti_product_id = $this->sku;
 		}
         if (!$this->external_id) {
             $this->external_id = $posti_product_id;
