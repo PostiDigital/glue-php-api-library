@@ -12,7 +12,7 @@ class Product
      */
     
     protected $optional = [
-        'warehouse',
+//        'warehouse',
         'external_id',
         'supplier_id',
         'wholesale_price',
@@ -657,9 +657,9 @@ class Product
 
         if ($this->business_id) {
             $posti_product_id = $this->business_id . '-' . $this->sku;
-        } else 
+        } else {
             $posti_product_id = $this->sku;
-		}
+	}
         if (!$this->external_id) {
             $this->external_id = $posti_product_id;
         }
