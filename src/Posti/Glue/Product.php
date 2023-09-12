@@ -727,7 +727,7 @@ class Product
 	if ($this->business_id) {
                 $balance["retailerId"] = $this->business_id;
 	}
-	$balances = $balance[0];
+	$balances[] = $balance;
 
         if ($this->send_balances === true) {
             return array('product' => $product, 'balances' => $balances);
