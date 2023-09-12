@@ -715,16 +715,19 @@ class Product
             $product['descriptions']['en']['specifications'] = $this->specifications;
         }
 
-        $balances = array(
-            array(
-                "retailerId" => $this->business_id,
+        $balances = [];
+	$balance = [
                 "productExternalId" => $posti_product_id,
                 "catalogExternalId" => $this->warehouse,
                 //"quantity" => 0.0,
                 "wholesalePrice" => $this->wholesale_price,
                 "currency" => $this->currency
-            )
-        );
+	];
+
+	if ($this->business_id) {
+                $balance["retailerId"] = $this->business_id;
+	}
+	$balances = $balance[0];
 
         if ($this->send_balances === true) {
             return array('product' => $product, 'balances' => $balances);
