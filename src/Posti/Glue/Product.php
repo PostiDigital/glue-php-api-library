@@ -655,11 +655,8 @@ class Product
     public function getData() {
         $this->validate();
 
-        if ($this->business_id) {
-            $posti_product_id = $this->business_id . '-' . $this->sku;
-        } else {
-            $posti_product_id = $this->sku;
-	}
+        $posti_product_id = $this->sku;
+
         if (!$this->external_id) {
             $this->external_id = $posti_product_id;
         }
@@ -717,6 +714,7 @@ class Product
 
         $balances = [];
 	$balance = [
+                "retailerId" => $this->business_id,
                 "productExternalId" => $posti_product_id,
                 "catalogExternalId" => $this->warehouse,
                 //"quantity" => 0.0,
@@ -724,9 +722,6 @@ class Product
                 "currency" => $this->currency
 	];
 
-	if ($this->business_id) {
-                $balance["retailerId"] = $this->business_id;
-	}
 	$balances[] = $balance;
 
         if ($this->send_balances === true) {
