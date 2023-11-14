@@ -296,8 +296,8 @@ class Product
      * @return Product
      */
 
-    public function setRecommendedRetailPrice($recommendedRetailPrice) {
-        $this->recommendedRetailPrice = $recommendedRetailPrice;
+    public function setRecommendedRetailPrice($recommended_retail_price) {
+        $this->recommended_retail_price = $recommended_retail_price;
         return $this;
     }
 
@@ -306,7 +306,7 @@ class Product
      */
 
     public function getRecommendedRetailPrice() {
-        return $this->recommendedRetailPrice;
+        return $this->recommended_retail_price;
     }
 
     /*
