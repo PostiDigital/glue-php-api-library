@@ -24,10 +24,10 @@ try {
     $product->setIsOversized(false);
     
     $product->setCurrency("EUR");
-    $product->setPrice(10.6);
+    $product->setRecommendedRetailPrice(10.6);
     $product->setWholesalePrice(10.6);
     
-    $product->setEan("TEST-0123456789");
+    $product->setExternalId("TEST-0123456789");
     
     $product->setHeight(0.3); //m
     $product->setLength(0.1); //m
