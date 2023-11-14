@@ -22,7 +22,7 @@ class Product
         'attachments',
         'images',
         'incoming',
-        'retailer_id',
+        'retailer_id'
     ];
     
     /*
