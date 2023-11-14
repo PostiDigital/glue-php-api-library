@@ -14,7 +14,6 @@ use Posti\Glue\Order\Item;
 try {
     $order = new Order();
     
-    $order->setId('123');
     $order->setOrderDate('2021-01-01 08:00:00');
     $order->setCurrency('EUR');
     $order->setTotalPrice(20.10);

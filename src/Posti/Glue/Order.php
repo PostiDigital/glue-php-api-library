@@ -87,8 +87,6 @@ class Order
      */
     private $references = [];
 
-    private $useBusinessId = true;
-
     private $deliveryOperator = 'Posti';
 
     /*
@@ -97,24 +95,6 @@ class Order
 
     public function getExternalId() {
         return $this->getPrefix() . $this->getId();
-    }
-
-    /*
-     * @param string $id
-     * @return Order
-     */
-
-    public function setId($id) {
-        $this->id = $id;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getId() {
-        return $this->id;
     }
 
     /*
@@ -358,36 +338,6 @@ class Order
 
     public function getItems() {
         return $this->items;
-    }
-
-    /**
-     * @param bool $useBusinessId
-     */
-    public function setUseBusinessId(bool $useBusinessId) {
-        $this->useBusinessId = $useBusinessId;
-    }
-
-    public function getUseBusinessId() {
-        return $this->useBusinessId;
-    }
-
-    public static function calculate_reference($id) {
-        $weights = array(7, 3, 1);
-        $sum = 0;
-
-        $base = str_split(strval(($id)));
-        $reversed_base = array_reverse($base);
-        $reversed_base_length = count($reversed_base);
-
-        for ($i = 0; $i < $reversed_base_length; $i++) {
-            $sum += $reversed_base[$i] * $weights[$i % 3];
-        }
-
-        $checksum = (10 - $sum % 10) % 10;
-
-        $reference = implode('', $base) . $checksum;
-
-        return $reference;
     }
 
     public function getData() {
