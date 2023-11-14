@@ -506,14 +506,14 @@ class Api
             || ('' == trim($postcode) && '' == trim($street_address))) {
                 return array();
             }
-            
-            return $this->ApiCall('/ecommerce/v3/pickup-points'
+
+            return json_decode($this->ApiCall('/ecommerce/v3/pickup-points'
                 . '?serviceCode=' . urlencode($service_code)
                 . '&postalCode=' . urlencode($postcode)
                 . '&postOffice=' . urlencode($city)
                 . '&streetAddress=' . urlencode($street_address)
                 . '&country=' . urlencode($country)
-                . '&type=' . urlencode($type), '', 'GET');
+                . '&type=' . urlencode($type), '', 'GET'), true);
     }
 
     /*
