@@ -16,7 +16,7 @@ class Product
         'external_id',
         'supplier_id',
         'wholesale_price',
-        'sku',
+        'recommended_retail_rice',
         'quantity',
         'specifications',
         'attachments',
@@ -57,11 +57,6 @@ class Product
     /*
      * @var string
      */
-    private $sku;
-
-    /*
-     * @var string
-     */
     private $ean;
 
     /*
@@ -72,7 +67,7 @@ class Product
     /*
      * @var float
      */
-    private $price;
+    private $recommended_retail_rice;
 
     /*
      * @var float
@@ -261,33 +256,12 @@ class Product
     }
 
     /*
-     * @param string $sku
-     * @return Product
-     */
-
-    public function setSku($sku) {
-        $this->sku = $sku;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getSku() {
-        return $this->sku;
-    }
-
-    /*
      * @param string $ean
      * @return Product
      */
 
     public function setEan($ean) {
         $this->ean = $ean;
-        if (!$this->sku) {
-            $this->sku = $ean;
-        }
         return $this;
     }
 
@@ -322,8 +296,8 @@ class Product
      * @return Product
      */
 
-    public function setPrice($price) {
-        $this->price = $price;
+    public function setRecommendedRetailPrice($recommendedRetailPrice) {
+        $this->recommendedRetailPrice = $recommendedRetailPrice;
         return $this;
     }
 
@@ -331,8 +305,8 @@ class Product
      * @return float
      */
 
-    public function getPrice() {
-        return $this->price;
+    public function getRecommendedRetailPrice() {
+        return $this->recommendedRetailPrice;
     }
 
     /*
@@ -619,6 +593,7 @@ class Product
         }
         
         $this->setExternalId($data['product']['externalId'] ?? null);
+        $this->setEan($data['product']['eanCode'] ?? null);
         $this->setWarehouse($data['balance']['catalogExternalId'] ?? null);
         $this->setBusinessId($data['product']['supplierId'] ?? null);
         $this->setDistributor($data['product']['distributor'] ?? null);
@@ -631,12 +606,10 @@ class Product
         $this->setIsOversized($data['product']['isOversized'] ?? false);
 
         $this->setCurrency($data['balance']['currency'] ?? null);
-        $this->setPrice($data['product']['recommendedRetailPrice'] ?? null);
+        $this->setRecommendedRetailPrice($data['product']['recommendedRetailPrice'] ?? null);
         $this->setWholesalePrice($data['balance']['wholesalePrice'] ?? null);
         $this->setQuantity($data['balance']['quantity'] ?? null);
         $this->setIncoming($data['balance']['incoming'] ?? null);
-
-        $this->setEan($data['balance']['eanCode'] ?? null);
 
         $this->setHeight($data['product']['measurements']['height'] ?? null);
         $this->setLength($data['product']['measurements']['length'] ?? null);
@@ -654,16 +627,6 @@ class Product
 
     public function getData() {
         $this->validate();
-
-        $posti_product_id = $this->sku;
-
-        if (!$this->external_id) {
-            $this->external_id = $posti_product_id;
-        }
-
-        if (!$this->wholesale_price) {
-            $this->wholesale_price = (float) $this->price;
-        }
         $product = array(
             'externalId' => $this->external_id,
             'descriptions' => array(
@@ -673,10 +636,10 @@ class Product
                     'attachments' => []
                 )
             ),
-            'eanCode' => $this->ean, //$_product->get_sku(),
+            'eanCode' => $this->ean,
             "unitOfMeasure" => "KPL",
             "status" => "ACTIVE",
-            "recommendedRetailPrice" => $this->price,
+            "recommendedRetailPrice" => $this->recommended_retail_rice,
             "currency" => $this->currency,
             "distributor" => $this->distributor,
             "isFragile" => $this->is_fragile,
@@ -715,7 +678,7 @@ class Product
         $balances = [];
 	$balance = [
                 "retailerId" => $this->business_id,
-                "productExternalId" => $posti_product_id,
+                "productExternalId" => $this->external_id,
                 "catalogExternalId" => $this->warehouse,
                 //"quantity" => 0.0,
                 "wholesalePrice" => $this->wholesale_price,
