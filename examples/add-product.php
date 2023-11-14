@@ -47,7 +47,7 @@ try {
     ]);
     $product->setSpecifications($specification);
     
-    $api = new Api($username, $password, $contract_number, $user_agent, true);
+    $api = new Api($username, $password, $user_agent, true);
     $api->setDebug(true, "../debug.log");
     $result = $api->addProduct($product);
     if ($result !== false) {

@@ -9,7 +9,7 @@ require 'config.php';
 use Posti\Glue\Api;
 
 try {
-    $api = new Api($username, $password, $contract_number, $user_agent, true);
+    $api = new Api($username, $password, $user_agent, true);
     $api->setDebug(true, "../debug.log");
     //log to function
     //$api->setDebug(true, static function($message, $type) { var_dump($type . ' ' . $message ); });

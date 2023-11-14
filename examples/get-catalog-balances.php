@@ -9,7 +9,7 @@ require 'config.php';
 use Posti\Glue\Api;
 
 try {
-    $api = new Api($username, $password, $contract_number, $user_agent, true);
+    $api = new Api($username, $password, $user_agent, true);
     $api->setDebug(true, "../debug.log");
     $balances = $api->getCatalogBalances($warehouse_id);
     echo '<pre>';

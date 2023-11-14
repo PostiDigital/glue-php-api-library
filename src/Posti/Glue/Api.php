@@ -37,11 +37,6 @@ class Api
     /*
      * @var string
      */
-    private $contract_number = null;
-
-    /*
-     * @var string
-     */
     private $user_agent = null;
 
     /*
@@ -67,15 +62,13 @@ class Api
     /*
      * @param string $username
      * @param string $password
-     * @param string $contract_number
      * @param string $user_agent
      * @param bool $test_mode
      */
 
-    public function __construct($username, $password, $contract_number, $user_agent, $test_mode = false) {
+    public function __construct($username, $password, $user_agent, $test_mode = false) {
         $this->username = $username;
         $this->password = $password;
-        $this->contract_number = $contract_number;
         $this->user_agent = $user_agent;
 
         if ($test_mode) {

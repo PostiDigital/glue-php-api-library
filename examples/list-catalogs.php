@@ -9,7 +9,7 @@ require 'config.php';
 use Posti\Glue\Api;
 
 try {
-    $api = new Api($username, $password, $contract_number, $user_agent, true);
+    $api = new Api($username, $password, $user_agent, true);
     $catalogs = $api->getCatalogs();
     foreach ($catalogs as $catalog) {
         echo $catalog->getExternalId() . ', ' . $catalog->getCatalogName() . '<br>';
