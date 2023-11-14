@@ -4,6 +4,7 @@ $username = "";
 $password = "";
 $busines_id = "";
 $contract_number = "";
+$user_agent = "examples/1.0"
 $warehouse_id = "";
 $distributor_id = "";
 $product_id = "";

@@ -55,7 +55,7 @@ try {
     $order->addItem($item);
     
     
-    $api = new Api($username, $password, $business_id, $contract_number, true);
+    $api = new Api($username, $password, $contract_number, $user_agent, true);
     $api->setDebug(true, "../debug.log");
     $result = $api->addOrder($order);
     if ($result !== false) {
