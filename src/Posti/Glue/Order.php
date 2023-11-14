@@ -27,11 +27,6 @@ class Order
     /*
      * @var string
      */
-    private $business_id;
-
-    /*
-     * @var string
-     */
     private $currency;
 
     /*
@@ -175,24 +170,6 @@ class Order
         } else {
             return $this->getBusinessId() . '-';
         }
-    }
-
-    /*
-     * @param string $business_id
-     * @return Order
-     */
-
-    public function setBusinessId($business_id) {
-        $this->business_id = $business_id;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getBusinessId() {
-        return $this->business_id;
     }
 
     /*
@@ -557,14 +534,6 @@ class Order
             "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
-
-        /*
-          if ($pickup_point) {
-          $address = $this->pickupPointData($pickup_point, $_order, $business_id);
-          if ($address) {
-          $order['deliveryAddress'] = $address;
-          }
-          } */
 
         if ($this->getUseBusinessId()) {
             $order["clientId"] = (string) $this->getBusinessId();

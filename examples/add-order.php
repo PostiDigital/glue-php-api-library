@@ -16,7 +16,6 @@ try {
     
     $order->setId('123');
     $order->setOrderDate('2021-01-01 08:00:00');
-    $order->setBusinessId($business_id);
     $order->setCurrency('EUR');
     $order->setTotalPrice(20.10);
     $order->setTotalTax(5.30);

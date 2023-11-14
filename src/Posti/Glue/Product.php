@@ -22,7 +22,7 @@ class Product
         'attachments',
         'images',
         'incoming',
-        'business_id',
+        'retailer_id',
     ];
     
     /*
@@ -42,7 +42,7 @@ class Product
      * @var string
      */
 
-    private $business_id;
+    private $retailer_id;
 
     /*
      * @var string
@@ -202,12 +202,12 @@ class Product
     }
     
     /*
-     * @param string $business_id
+     * @param string $retailer_id
      * @return Product
      */
 
-    public function setBusinessId($business_id) {
-        $this->business_id = $business_id;
+    public function setRetailerId($retailer_id) {
+        $this->retailer_id = $retailer_id;
         return $this;
     }
 
@@ -215,8 +215,8 @@ class Product
      * @return string
      */
 
-    public function getBusinessId() {
-        return $this->business_id;
+    public function getRetailerId() {
+        return $this->retailer_id;
     }
 
     /*
@@ -595,7 +595,7 @@ class Product
         $this->setExternalId($data['product']['externalId'] ?? null);
         $this->setEan($data['product']['eanCode'] ?? null);
         $this->setWarehouse($data['balance']['catalogExternalId'] ?? null);
-        $this->setBusinessId($data['product']['supplierId'] ?? null);
+        $this->setRetailerId($data['product']['supplierId'] ?? null);
         $this->setDistributor($data['product']['distributor'] ?? null);
 
         $this->setName($data['product']['descriptions']['en']['name'] ?? null);
@@ -677,7 +677,7 @@ class Product
 
         $balances = [];
 	$balance = [
-                "retailerId" => $this->business_id,
+                "retailerId" => $this->retailer_id,
                 "productExternalId" => $this->external_id,
                 "catalogExternalId" => $this->warehouse,
                 //"quantity" => 0.0,
