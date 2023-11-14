@@ -500,6 +500,21 @@ class Api
         $status = $this->ApiCall('/ecommerce/v3/orders/' . $order_id, '', 'DELETE');
         return $status;
     }
+    
+    public function getPickupPoints($postcode = null, $street_address = null, $country = null, $city = null, $service_code = null, $type = null) {
+        if ((null == $postcode && null == $street_address)
+            || ('' == trim($postcode) && '' == trim($street_address))) {
+                return array();
+            }
+            
+            return $this->ApiCall('/ecommerce/v3/pickup-points'
+                . '?serviceCode=' . urlencode($service_code)
+                . '&postalCode=' . urlencode($postcode)
+                . '&postOffice=' . urlencode($city)
+                . '&streetAddress=' . urlencode($street_address)
+                . '&country=' . urlencode($country)
+                . '&type=' . urlencode($type), '', 'GET');
+    }
 
     /*
      * @param $url
