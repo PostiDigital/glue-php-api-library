@@ -16,7 +16,7 @@ class Product
         'external_id',
         'supplier_id',
         'wholesale_price',
-        'recommended_retail_rice',
+        'recommended_retail_price',
         'quantity',
         'specifications',
         'attachments',
@@ -67,7 +67,7 @@ class Product
     /*
      * @var float
      */
-    private $recommended_retail_rice;
+    private $recommended_retail_price;
 
     /*
      * @var float
@@ -639,7 +639,7 @@ class Product
             'eanCode' => $this->ean,
             "unitOfMeasure" => "KPL",
             "status" => "ACTIVE",
-            "recommendedRetailPrice" => $this->recommended_retail_rice,
+            "recommendedRetailPrice" => $this->recommended_retail_price,
             "currency" => $this->currency,
             "distributor" => $this->distributor,
             "isFragile" => $this->is_fragile,
