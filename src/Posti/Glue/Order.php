@@ -14,8 +14,6 @@ class Order
 
     protected $optional = [
         'routing_service',
-        'prefix',
-        'use_prefix',
         'pickup_point_id'
     ];
 
@@ -38,16 +36,6 @@ class Order
      * @var string
      */
     private $total_tax;
-
-    /*
-     * @var string
-     */
-    private $prefix;
-
-    /*
-     * @var bool
-     */
-    private $use_prefix = true;
 
     /*
      * @var string
@@ -127,49 +115,6 @@ class Order
 
     public function getId() {
         return $this->id;
-    }
-
-    /*
-     * @param bool $use_prefix
-     * @return Order
-     */
-
-    public function setUsePrefix($use_prefix) {
-        $this->use_prefix = $use_prefix;
-        return $this;
-    }
-
-    /*
-     * @return bool
-     */
-
-    public function getUsePrefix() {
-        return $this->use_prefix;
-    }
-
-    /*
-     * @param string $prefix
-     * @return Order
-     */
-
-    public function setPrefix($prefix) {
-        $this->prefix = $prefix;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getPrefix() {
-        if ($this->getUsePrefix() !== true) {
-            return "";
-        }
-        if ($this->prefix) {
-            return $this->prefix;
-        } else {
-            return $this->getBusinessId() . '-';
-        }
     }
 
     /*
@@ -534,10 +479,6 @@ class Order
             "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
-
-        if ($this->getUseBusinessId()) {
-            $order["clientId"] = (string) $this->getBusinessId();
-        }
 
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
