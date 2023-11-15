@@ -523,7 +523,7 @@ class Api
         foreach ($response as $p) {
             $pickupPoint = new PickupPoint();
             $pickupPoint->fillData($p);
-            result[] = $pickupPoint;
+            $result[] = $pickupPoint;
         }
 
         return $result;
