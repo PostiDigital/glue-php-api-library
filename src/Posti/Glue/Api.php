@@ -507,13 +507,13 @@ class Api
                 return array();
             }
 
-            return json_decode($this->ApiCall('/ecommerce/v3/pickup-points'
+            return $this->ApiCall('/ecommerce/v3/pickup-points'
                 . '?serviceCode=' . urlencode($service_code)
                 . '&postalCode=' . urlencode($postcode)
                 . '&postOffice=' . urlencode($city)
                 . '&streetAddress=' . urlencode($street_address)
                 . '&country=' . urlencode($country)
-                . '&type=' . urlencode($type), '', 'GET'), true);
+                . '&type=' . urlencode($type), '', 'GET');
     }
 
     /*
