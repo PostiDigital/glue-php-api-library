@@ -3,7 +3,7 @@
 namespace Posti\Glue;
 
 use Posti\Glue\Logger;
-use Posti\Glue\Product;
+use Posti\Glue\InventoryItem;
 use Posti\Glue\Catalog;
 
 class Api
