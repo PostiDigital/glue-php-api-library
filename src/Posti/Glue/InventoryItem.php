@@ -4,54 +4,20 @@ namespace Posti\Glue;
 
 use Posti\Glue\Attachment;
 use Posti\Glue\Image;
+use Posti\Glue\StockBalance;
+use Posti\Glue\Fields;
 
-class Product
+class InventoryItem
 {
     /*
-     * @var array
-     */
-    
-    protected $optional = [
-//        'warehouse',
-        'external_id',
-        'supplier_id',
-        'wholesale_price',
-        'recommended_retail_price',
-        'quantity',
-        'specifications',
-        'attachments',
-        'images',
-        'incoming',
-        'retailer_id',
-        'weight',
-        'length',
-        'width',
-        'height'
-    ];
-    
-    /*
      * @var string
      */
-
     private $external_id;
     
-    
     /*
      * @var string
      */
-
     private $supplier_id;
-    
-    /*
-     * @var string
-     */
-
-    private $retailer_id;
-
-    /*
-     * @var string
-     */
-    private $warehouse;
 
     /*
      * @var string
@@ -61,7 +27,7 @@ class Product
     /*
      * @var string
      */
-    private $ean;
+    private $ean_code;
 
     /*
      * @var string
@@ -69,19 +35,14 @@ class Product
     private $currency;
 
     /*
-     * @var float
+     * @var string
      */
-    private $recommended_retail_price;
+    private $unit_of_measure = 'KPL';
 
     /*
      * @var float
      */
-    private $wholesale_price;
-    
-    /*
-     * @var float
-     */
-    private $quantity;
+    private $recommended_retail_price;
 
     /*
      * @var string
@@ -136,42 +97,21 @@ class Product
     /*
      * @var array
      */
-    private $attachments = [];
+    private $attachments = null;
     
     /*
      * @var array
      */
-    private $images = [];
+    private $images = null;
     
     /*
-     * @var bool
+     * @var array
      */
-    private $send_balances = true;
-
-    /**
-     * @var float
-     */
-    private $incoming = null;
-
-    /**
-     * @return float|null
-     */
-    public function getIncoming()
-    {
-        return $this->incoming;
-    }
-
-    /**
-     * @param float|null $incoming
-     */
-    public function setIncoming($incoming)
-    {
-        $this->incoming = $incoming;
-    }
+    private $balances = null;
 
     /*
      * @param string $external_id
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setExternalId($external_id) {
@@ -189,7 +129,7 @@ class Product
 
     /*
      * @param string $supplier_id
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setSupplierId($supplier_id) {
@@ -206,44 +146,8 @@ class Product
     }
     
     /*
-     * @param string $retailer_id
-     * @return Product
-     */
-
-    public function setRetailerId($retailer_id) {
-        $this->retailer_id = $retailer_id;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getRetailerId() {
-        return $this->retailer_id;
-    }
-
-    /*
-     * @param string $warehouse
-     * @return Product
-     */
-
-    public function setWarehouse($warehouse) {
-        $this->warehouse = $warehouse;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getWarehouse() {
-        return $this->warehouse;
-    }
-
-    /*
      * @param string $distributor
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setDistributor($distributor) {
@@ -260,12 +164,12 @@ class Product
     }
 
     /*
-     * @param string $ean
-     * @return Product
+     * @param string $ean_code
+     * @return InventoryItem
      */
 
-    public function setEan($ean) {
-        $this->ean = $ean;
+    public function setEanCode($ean_code) {
+        $this->ean_code = $ean_code;
         return $this;
     }
 
@@ -273,13 +177,13 @@ class Product
      * @return string
      */
 
-    public function getEan() {
-        return $this->ean;
+    public function getEanCode() {
+        return $this->ean_code;
     }
 
     /*
      * @param string $currency
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setCurrency($currency) {
@@ -295,9 +199,27 @@ class Product
         return $this->currency;
     }
 
+    
+    /*
+     * @param string $currency
+     * @return InventoryItem
+     */
+    
+    public function setUnitOfMeasure($unit_of_measure) {
+        $this->unit_of_measure = $unit_of_measure;
+        return $this;
+    }
+    
+    /*
+     * @return string
+     */
+    public function getUnitOfMeasure() {
+        return $this->unit_of_measure;
+    }
+    
     /*
      * @param float $price
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setRecommendedRetailPrice($recommended_retail_price) {
@@ -314,44 +236,8 @@ class Product
     }
 
     /*
-     * @param float $wholesale_price
-     * @return Product
-     */
-
-    public function setWholesalePrice($wholesale_price) {
-        $this->wholesale_price = $wholesale_price;
-        return $this;
-    }
-
-    /*
-     * @return float
-     */
-
-    public function getWholesalePrice() {
-        return $this->wholesale_price;
-    }
-    
-    /*
-     * @param float $quantity
-     * @return Product
-     */
-
-    public function setQuantity($quantity) {
-        $this->quantity = $quantity;
-        return $this;
-    }
-
-    /*
-     * @return float
-     */
-
-    public function getQuantity() {
-        return $this->quantity;
-    }
-
-    /*
      * @param string $name
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setName($name) {
@@ -369,7 +255,7 @@ class Product
 
     /*
      * @param string $description
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setDescription($description) {
@@ -387,7 +273,7 @@ class Product
 
     /*
      * @param float $weight
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setWeight($weight) {
@@ -405,7 +291,7 @@ class Product
 
     /*
      * @param float $length
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setLength($length) {
@@ -423,7 +309,7 @@ class Product
 
     /*
      * @param float $width
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setWidth($width) {
@@ -441,7 +327,7 @@ class Product
 
     /*
      * @param float $height
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setHeight($height) {
@@ -459,7 +345,7 @@ class Product
 
     /*
      * @param bool $is_fragile
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setIsFragile($is_fragile) {
@@ -477,7 +363,7 @@ class Product
 
     /*
      * @param bool $is_dangerous
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setIsDangerous($is_dangerous) {
@@ -495,7 +381,7 @@ class Product
 
     /*
      * @param bool $is_oversized
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setIsOversized($is_oversized) {
@@ -513,7 +399,7 @@ class Product
     
     /*
      * @param mixed $specifications
-     * @return Product
+     * @return InventoryItem
      */
 
     public function setSpecifications($specifications) {
@@ -531,10 +417,14 @@ class Product
     
     /*
      * @param Attachment $attachments
-     * @return Product
+     * @return InventoryItem
      */
 
     public function addAttachment(Attachment $attachment) {
+        if (!isset($this->attachments)) {
+            $this->attachments = array();
+        }
+        
         $this->attachments[] = $attachment;
         return $this;
     }
@@ -549,10 +439,14 @@ class Product
     
     /*
      * @param Image $image
-     * @return Product
+     * @return InventoryItem
      */
 
     public function addImage(Image $image) {
+        if (!isset($this->images)) {
+            $this->images = array();
+        }
+
         $this->images[] = $image;
         return $this;
     }
@@ -560,46 +454,45 @@ class Product
     /*
      * @return mixed
      */
-
     public function getImages() {
         return $this->images;
     }
 
-    /*
-     * @param bool $send_balances
-     * @return Product
-     */
+    public function addBalance(StockBalance $balance) {
+        if (!isset($this->balances)) {
+            $this->balances = array();
+        }
 
-    public function setSendBalances($send_balances) {
-        $this->send_balances = $send_balances;
+        $this->balances[] = $balance;
+        return $this;
+    }
+    
+    /*
+     * @return mixed
+     */
+    public function setBalances($balances) {
+        $this->balances = $balances;
         return $this;
     }
 
     /*
-     * @return bool
+     * @return mixed
      */
-
-    public function getSendBalances() {
-        return $this->send_balances;
+    public function getBalances() {
+        return $this->balances;
     }
 
     /*
      * @param array $data
-     * @return Product
+     * @return InventoryItem
      */
-
     public function fillData($data) {
-        if (is_array($data) && isset($data['balances'])) {
-            $data['balance'] = $data['balances'][0];
-        }
-        if (!is_array($data) || !isset($data['product']) || !isset($data['balance'])) {
+        if (!is_array($data) || !isset($data['product'])) {
             return false;
         }
         
         $this->setExternalId($data['product']['externalId'] ?? null);
-        $this->setEan($data['product']['eanCode'] ?? null);
-        $this->setWarehouse($data['balance']['catalogExternalId'] ?? null);
-        $this->setRetailerId($data['product']['supplierId'] ?? null);
+        $this->setEanCode($data['product']['eanCode'] ?? null);
         $this->setDistributor($data['product']['distributor'] ?? null);
 
         $this->setName($data['product']['descriptions']['en']['name'] ?? null);
@@ -609,18 +502,25 @@ class Product
         $this->setIsFragile($data['product']['isFragile'] ?? false);
         $this->setIsOversized($data['product']['isOversized'] ?? false);
 
-        $this->setCurrency($data['balance']['currency'] ?? null);
+        $this->setCurrency($data['product']['currency'] ?? null);
         $this->setRecommendedRetailPrice($data['product']['recommendedRetailPrice'] ?? null);
-        $this->setWholesalePrice($data['balance']['wholesalePrice'] ?? null);
-        $this->setQuantity($data['balance']['quantity'] ?? null);
-        $this->setIncoming($data['balance']['incoming'] ?? null);
-
         $this->setHeight($data['product']['measurements']['height'] ?? null);
         $this->setLength($data['product']['measurements']['length'] ?? null);
         $this->setWidth($data['product']['measurements']['width'] ?? null);
         $this->setWeight($data['product']['measurements']['weight'] ?? null);
-        
         $this->setSpecifications($data['product']['descriptions']['en']['specifications'] ?? null);
+
+        if (isset($data['balances'])) {
+            foreach ($data['balances'] as $b) {
+                $balance = new StockBalance();
+                $balance.fillData($b);
+
+                $this->addBalance($balance);
+            }
+        }
+        else {
+            $this->setBalances(null);
+        }
         
         return $this;
     }
@@ -628,9 +528,7 @@ class Product
     /*
      * @return mixed
      */
-
     public function getData() {
-        $this->validate();
         $product = array(
             'externalId' => $this->external_id,
             'descriptions' => array(
@@ -640,21 +538,21 @@ class Product
                     'attachments' => []
                 )
             ),
-            'eanCode' => $this->ean,
-            "unitOfMeasure" => "KPL",
-            "status" => "ACTIVE",
-            "recommendedRetailPrice" => $this->recommended_retail_price,
-            "currency" => $this->currency,
-            "distributor" => $this->distributor,
-            "isFragile" => $this->is_fragile,
-            "isDangerousGoods" => $this->is_dangerous,
-            "isOversized" => $this->is_oversized,
+            "unitOfMeasure" => $this->unit_of_measure,
             "images" => []
         );
+        
+        Fields::addOptField($product, 'recommendedRetailPrice', $this->recommended_retail_price);
+        Fields::addOptField($product, 'currency', $this->currency);
+        Fields::addOptField($product, 'eanCode', $this->ean_code);
+        Fields::addOptField($product, 'distributor', $this->distributor);
+        Fields::addOptField($product, 'isFragile', $this->is_fragile);
+        Fields::addOptField($product, 'isDangerousGoods', $this->is_dangerous);
+        Fields::addOptField($product, 'isOversized', $this->is_oversized);
+        
         if ($this->supplier_id !== null) {
             $product["supplierId"] = $this->supplier_id;
         }
-            
         
         if (!empty($this->attachments)) {
             foreach ($this->attachments as $attachment) {
@@ -668,69 +566,35 @@ class Product
             }
         }
 
-        $product['measurements'] = array(
-            "weight" => $this->weight,
-            "length" => $this->length,
-            "width" => $this->width,
-            "height" => $this->height,
-        );
+        if (isset($this->weight)
+            || isset($this->length)
+            || isset($this->width)
+            || isset($this->height)) {
+
+            $measurements = array();
+            Fields::addOptField($measurements, 'weight', $this->weight);
+            Fields::addOptField($measurements, 'length', $this->length);
+            Fields::addOptField($measurements, 'width', $this->width);
+            Fields::addOptField($measurements, 'height', $this->height);
+            $product['measurements'] = $measurements;
+        }
         
         if ($this->specifications) {
             $product['descriptions']['en']['specifications'] = $this->specifications;
         }
+        
+        $result = array();
+        $result['product'] = $product;
 
-        $balances = [];
-	$balance = [
-                "retailerId" => $this->retailer_id,
-                "productExternalId" => $this->external_id,
-                "catalogExternalId" => $this->warehouse,
-                //"quantity" => 0.0,
-                "wholesalePrice" => $this->wholesale_price,
-                "currency" => $this->currency
-	];
-
-	$balances[] = $balance;
-
-        if ($this->send_balances === true) {
-            return array('product' => $product, 'balances' => $balances);
-        } else {
-            return array('product' => $product);
-        }
-    }
-
-    /*
-     * @return mixed
-     */
-
-    private function validate() {
-        $errors = [];
-        $vars = get_object_vars($this);
-        foreach ($vars as $var => $value) {
-            if (in_array(trim($var, '$'), $this->optional)) {
-                continue;
+        if (isset($this->balances)) {
+            $balances = array();
+            foreach ($this->balances as $b) {
+                $balances[] = $b->getData();
             }
-            if ($value === null) {
-                $errors[] = 'Variable ' . $var . ' is missing. Set it with set' . $this->getMethodName($var) . '($val).';
-            }
+
+            $result['balances'] = $balances;
         }
-        if (!empty($errors)) {
-            throw new \Exception(implode("<br/>", $errors));
-        }
-        return true;
+
+        return $result;
     }
-
-    /*
-     * @param string $var
-     * @return string
-     */
-
-    private function getMethodName($var) {
-        $name = '';
-        $parts = explode('_', trim($var, '$'));
-        foreach ($parts as $part) {
-            $name .= ucfirst($part);
-        }
-        return $name;
-    }
-
 }

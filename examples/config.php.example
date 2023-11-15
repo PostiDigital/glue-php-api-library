@@ -2,7 +2,7 @@
 
 $username = "";
 $password = "";
-$busines_id = "";
+$retailer_id = "";
 $contract_number = "";
 $user_agent = "examples/1.0"
 $warehouse_id = "";

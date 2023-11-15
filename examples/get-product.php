@@ -10,7 +10,7 @@ use Posti\Glue\Api;
 
 try {
     $api = new Api($username, $password, $user_agent, true);
-    $product = $api->getProduct($product_id);
+    $product = $api->getInventoryItem($product_id);
     echo '<pre>';
     var_dump($product);
     echo '</pre>';

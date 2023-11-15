@@ -11,7 +11,7 @@ use Posti\Glue\Api;
 try {
     $api = new Api($username, $password, $user_agent, true);
     $api->setDebug(true, "../debug.log");
-    $products = $api->getProductsByCatalog($warehouse_id, $business_id);
+    $products = $api->getInventoryItems($warehouse_id, $business_id);
     echo '<pre>';
     print_r($products);
     echo '</pre>';

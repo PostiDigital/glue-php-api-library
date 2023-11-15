@@ -307,9 +307,9 @@ class Api
      * @return mixed
      */
 
-    public function getProduct($id) {
+    public function getInventoryItem($id) {
         $product_data = $this->ApiCall('/ecommerce/v3/inventory/' . $id, '', 'GET');
-        $product = new Product();
+        $product = new InventoryItem();
         return $product->fillData($product_data);
     }
 
@@ -318,14 +318,14 @@ class Api
      * @return mixed
      */
 
-    public function getProductsByCatalog($id, $retailerId, $attrs = '') {
-        $products_data = $this->ApiCall('/ecommerce/v3/inventory?retailerId=' . $retailerId . '&catalogExternalId=' . $id, $attrs, 'GET');
+    public function getInventoryItemsByCatalog($catalogExternalId, $retailerId, $attrs = '') {
+        $products_data = $this->ApiCall('/ecommerce/v3/inventory?retailerId=' . $retailerId . '&catalogExternalId=' . $catalogExternalId, $attrs, 'GET');
         $products = [];
         if (is_array($products_data)) {
             foreach ($products_data as $data) {
-                $product = new Product();
+                $product = new InventoryItem();
                 if ($product->fillData($data) === false) {
-                    $this->logger->log("error", 'Failed to create product from: ' . json_encode($data));
+                    $this->logger->log("error", 'Failed to create inventory item from: ' . json_encode($data));
                     continue;
                 }
                 $products[] = $product;
@@ -339,7 +339,7 @@ class Api
      * @return mixed
      */
 
-    public function addProduct($products) {
+    public function addInventoryItems($products) {
         $products_data = [];
         if (!is_array($products)) {
             $products = [$products];
@@ -356,7 +356,7 @@ class Api
      * @return mixed
      */
 
-     public function deleteProduct($productExternalId) {
+     public function deleteInventoryItem($productExternalId) {
          $payload = [['product' => ['externalId' => $productExternalId, 'status' => 'EOS']]];
          $status = $this->ApiCall('/ecommerce/v3/inventory', $payload, 'DELETE');
          return $status;
