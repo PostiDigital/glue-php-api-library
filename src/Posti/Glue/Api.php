@@ -428,16 +428,21 @@ class Api
      * @param string $date
      * @return mixed
      */
+    public function getCatalogOrdersStatuses($catalog_id = null, $date = null) {
+        $params = null;
+        if ($catalog_id || $date) {
+            $params = array();
+            if ($catalog_id) {
+                $params['warehouseExternalId'] = $catalog_id;
+            }
 
-    public function getCatalogOrdersStatuses($catalog_id, $date = null) {
-        $data = [
-            'warehouseExternalId' => $catalog_id
-        ];
-        if ($date) {
-            $data['updatedFrom'] = date('c', strtotime($date));
+            if ($date) {
+                $params['updatedFrom'] = date('c', strtotime($date));
+            }
         }
+
         $statuses = [];
-        $response = $this->ApiCall('/ecommerce/v3/orders', $data, 'GET');
+        $response = $this->ApiCall('/ecommerce/v3/orders', $params, 'GET');
         if (is_array($response)) {
             foreach ($response as $order_data) {
                 $statuses[] = [
