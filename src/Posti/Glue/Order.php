@@ -14,8 +14,6 @@ class Order
 
     protected $optional = [
         'routing_service',
-        'prefix',
-        'use_prefix',
         'pickup_point_id'
     ];
 
@@ -23,11 +21,6 @@ class Order
      * @var string
      */
     private $id;
-
-    /*
-     * @var string
-     */
-    private $business_id;
 
     /*
      * @var string
@@ -43,16 +36,6 @@ class Order
      * @var string
      */
     private $total_tax;
-
-    /*
-     * @var string
-     */
-    private $prefix;
-
-    /*
-     * @var bool
-     */
-    private $use_prefix = true;
 
     /*
      * @var string
@@ -104,8 +87,6 @@ class Order
      */
     private $references = [];
 
-    private $useBusinessId = true;
-
     private $deliveryOperator = 'Posti';
 
     /*
@@ -114,85 +95,6 @@ class Order
 
     public function getExternalId() {
         return $this->getPrefix() . $this->getId();
-    }
-
-    /*
-     * @param string $id
-     * @return Order
-     */
-
-    public function setId($id) {
-        $this->id = $id;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getId() {
-        return $this->id;
-    }
-
-    /*
-     * @param bool $use_prefix
-     * @return Order
-     */
-
-    public function setUsePrefix($use_prefix) {
-        $this->use_prefix = $use_prefix;
-        return $this;
-    }
-
-    /*
-     * @return bool
-     */
-
-    public function getUsePrefix() {
-        return $this->use_prefix;
-    }
-
-    /*
-     * @param string $prefix
-     * @return Order
-     */
-
-    public function setPrefix($prefix) {
-        $this->prefix = $prefix;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getPrefix() {
-        if ($this->getUsePrefix() !== true) {
-            return "";
-        }
-        if ($this->prefix) {
-            return $this->prefix;
-        } else {
-            return $this->getBusinessId() . '-';
-        }
-    }
-
-    /*
-     * @param string $business_id
-     * @return Order
-     */
-
-    public function setBusinessId($business_id) {
-        $this->business_id = $business_id;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getBusinessId() {
-        return $this->business_id;
     }
 
     /*
@@ -438,36 +340,6 @@ class Order
         return $this->items;
     }
 
-    /**
-     * @param bool $useBusinessId
-     */
-    public function setUseBusinessId(bool $useBusinessId) {
-        $this->useBusinessId = $useBusinessId;
-    }
-
-    public function getUseBusinessId() {
-        return $this->useBusinessId;
-    }
-
-    public static function calculate_reference($id) {
-        $weights = array(7, 3, 1);
-        $sum = 0;
-
-        $base = str_split(strval(($id)));
-        $reversed_base = array_reverse($base);
-        $reversed_base_length = count($reversed_base);
-
-        for ($i = 0; $i < $reversed_base_length; $i++) {
-            $sum += $reversed_base[$i] * $weights[$i % 3];
-        }
-
-        $checksum = (10 - $sum % 10) % 10;
-
-        $reference = implode('', $base) . $checksum;
-
-        return $reference;
-    }
-
     public function getData() {
 
         $this->validate();
@@ -557,18 +429,6 @@ class Order
             "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
-
-        /*
-          if ($pickup_point) {
-          $address = $this->pickupPointData($pickup_point, $_order, $business_id);
-          if ($address) {
-          $order['deliveryAddress'] = $address;
-          }
-          } */
-
-        if ($this->getUseBusinessId()) {
-            $order["clientId"] = (string) $this->getBusinessId();
-        }
 
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;

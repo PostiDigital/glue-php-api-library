@@ -3,8 +3,9 @@
 namespace Posti\Glue;
 
 use Posti\Glue\Logger;
-use Posti\Glue\Product;
+use Posti\Glue\InventoryItem;
 use Posti\Glue\Catalog;
+use Posti\Glue\PickupPoint;
 
 class Api
 {
@@ -35,19 +36,9 @@ class Api
     private $test = false;
 
     /*
-     * @var bool
-     */
-    private $system_account = false;
-
-    /*
      * @var string
      */
-    private $contract_number = null;
-
-    /*
-     * @var string
-     */
-    private $business_id = null;
+    private $user_agent = null;
 
     /*
      * @var Logger
@@ -72,23 +63,17 @@ class Api
     /*
      * @param string $username
      * @param string $password
-     * @param string $business_id
-     * @param string $contract_number
+     * @param string $user_agent
      * @param bool $test_mode
      */
 
-    public function __construct($username, $password, $business_id, $contract_number, $test_mode = false, $system_account = false) {
+    public function __construct($username, $password, $user_agent, $test_mode = false) {
         $this->username = $username;
         $this->password = $password;
-        $this->business_id = $business_id;
-        $this->contract_number = $contract_number;
+        $this->user_agent = $user_agent;
 
         if ($test_mode) {
             $this->test = $test_mode;
-        }
-
-        if ($system_account) {
-            $this->system_account = $system_account;
         }
 
         $this->logger = new Logger();
@@ -131,17 +116,9 @@ class Api
             return $this->api_url;
         }
         if ($this->test) {
-            return "https://argon.ecom-api.posti.com/ecommerce/v3/";
+            return "https://argon.ecom-api.posti.com";
         }
-        return "https://ecom-api.posti.com/ecommerce/v3/";
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getBusinessId() {
-        return $this->business_id;
+        return "https://ecom-api.posti.com";
     }
 
     /*
@@ -162,10 +139,7 @@ class Api
         if ($this->auth_url) {
             return $this->auth_url;
         }
-        if ($this->test) {
-            return "https://oauth2.barium.posti.com";
-        }
-        return "https://oauth2.posti.com";
+        return $this->getApiUrl();
     }
 
     /*
@@ -186,7 +160,7 @@ class Api
         if ($this->token) {
             return $this->token;
         }
-        $token_data = json_decode($this->getPostiToken($this->getAuthUrl() . "/oauth/token?grant_type=client_credentials", $this->username, $this->password));
+        $token_data = json_decode($this->createToken($this->getAuthUrl() . "/auth/token", $this->username, $this->password));
 
         if (isset($token_data->access_token)) {
             $this->token = $token_data->access_token;
@@ -216,16 +190,11 @@ class Api
         if (!$this->token) {
             $this->getToken();
         }
-        $env = $this->test ? "TEST " : "PROD ";
+        $env = $this->test ? "TEST " : "";
         $curl = curl_init();
         $header = array();
 
         $header[] = 'Authorization: Bearer ' . $this->token;
-
-        if ($this->system_account) {
-            $header[] = 'Client-Roles: ROLE_ap_ecommerce_api_retailer,ROLE_ap_ecommerce_api_supplier';
-            $header[] = 'Client-Id: ' . $this->business_id;
-        }
 
         $data = $input_data;
         $url = $input_url;
@@ -281,7 +250,7 @@ class Api
 
             base64_encode($result),
         ));
-        $this->logger->log("info", $env . " " . $action . " Request to: " . $this->getApiUrl() . $url . "\nResponse: " . $result);
+        $this->logger->log("info", $env . $action . " Request to: " . $this->getApiUrl() . $url . "\nResponse: " . $result);
 
         if (!$result) {
             $this->logger->log("error", $http_status . ' - response from ' . $this->getApiUrl() . $url . ': ' . $result);
@@ -318,7 +287,7 @@ class Api
      */
 
     public function getCatalogs() {
-        $catalogs_data = $this->ApiCall('catalogs?role=RETAILER', '', 'GET');
+        $catalogs_data = $this->ApiCall('/ecommerce/v3/catalogs?role=RETAILER', '', 'GET');
         if (!is_array($catalogs_data)) {
             $catalogs_data = array();
         }
@@ -339,9 +308,9 @@ class Api
      * @return mixed
      */
 
-    public function getProduct($id) {
-        $product_data = $this->ApiCall('inventory/' . $id, '', 'GET');
-        $product = new Product();
+    public function getInventoryItem($id) {
+        $product_data = $this->ApiCall('/ecommerce/v3/inventory/' . $id, '', 'GET');
+        $product = new InventoryItem();
         return $product->fillData($product_data);
     }
 
@@ -350,23 +319,14 @@ class Api
      * @return mixed
      */
 
-    public function getProductsByWarehouse($id, $attrs = '') {
-        return $this->getProductsByCatalog($id, $attrs);
-    }
-
-    /*
-     * @param string $id
-     * @return mixed
-     */
-
-    public function getProductsByCatalog($id, $attrs = '') {
-        $products_data = $this->ApiCall('inventory?retailerId=' . $this->business_id . '&catalogExternalId=' . $id, $attrs, 'GET');
+    public function getInventoryItemsByCatalog($catalogExternalId, $retailerId, $attrs = '') {
+        $products_data = $this->ApiCall('/ecommerce/v3/inventory?retailerId=' . $retailerId . '&catalogExternalId=' . $catalogExternalId, $attrs, 'GET');
         $products = [];
         if (is_array($products_data)) {
             foreach ($products_data as $data) {
-                $product = new Product();
+                $product = new InventoryItem();
                 if ($product->fillData($data) === false) {
-                    $this->logger->log("error", 'Failed to create product from: ' . json_encode($data));
+                    $this->logger->log("error", 'Failed to create inventory item from: ' . json_encode($data));
                     continue;
                 }
                 $products[] = $product;
@@ -380,7 +340,7 @@ class Api
      * @return mixed
      */
 
-    public function addProduct($products) {
+    public function addInventoryItems($products) {
         $products_data = [];
         if (!is_array($products)) {
             $products = [$products];
@@ -388,7 +348,7 @@ class Api
         foreach ($products as $product) {
             $products_data[] = $product->getData();
         }
-        $status = $this->ApiCall('inventory', $products_data, 'PUT');
+        $status = $this->ApiCall('/ecommerce/v3/inventory', $products_data, 'PUT');
         return $status;
     }
 
@@ -397,9 +357,9 @@ class Api
      * @return mixed
      */
 
-     public function deleteProduct($productExternalId) {
+     public function deleteInventoryItem($productExternalId) {
          $payload = [['product' => ['externalId' => $productExternalId, 'status' => 'EOS']]];
-         $status = $this->ApiCall('inventory', $payload, 'DELETE');
+         $status = $this->ApiCall('/ecommerce/v3/inventory', $payload, 'DELETE');
          return $status;
     }
 
@@ -413,7 +373,7 @@ class Api
         if ($date) {
             $data['modifiedFromDate'] = date('c', strtotime($date));
         }
-        $balances = $this->ApiCall('inventory/balances', $data, 'GET');
+        $balances = $this->ApiCall('/ecommerce/v3/inventory/balances', $data, 'GET');
         return $balances;
     }
 
@@ -428,7 +388,7 @@ class Api
         if ($date) {
             $data['modifiedFromDate'] = date('c', strtotime($date));
         }
-        $balances = $this->ApiCall('catalogs/' . $catalog_id . '/balances', $data, 'GET');
+        $balances = $this->ApiCall('/ecommerce/v3/catalogs/' . $catalog_id . '/balances', $data, 'GET');
         return $balances;
     }
 
@@ -446,7 +406,7 @@ class Api
             $data['updatedFrom'] = date('c', strtotime($date));
         }
         $orders = [];
-        $response = $this->ApiCall('orders', $data, 'GET');
+        $response = $this->ApiCall('/ecommerce/v3/orders', $data, 'GET');
         return $response;
         //TODO: create Order objects from response data
         /*
@@ -468,16 +428,21 @@ class Api
      * @param string $date
      * @return mixed
      */
+    public function getCatalogOrdersStatuses($catalog_id = null, $date = null) {
+        $params = null;
+        if ($catalog_id || $date) {
+            $params = array();
+            if ($catalog_id) {
+                $params['warehouseExternalId'] = $catalog_id;
+            }
 
-    public function getCatalogOrdersStatuses($catalog_id, $date = null) {
-        $data = [
-            'warehouseExternalId' => $catalog_id
-        ];
-        if ($date) {
-            $data['updatedFrom'] = date('c', strtotime($date));
+            if ($date) {
+                $params['updatedFrom'] = date('c', strtotime($date));
+            }
         }
+
         $statuses = [];
-        $response = $this->ApiCall('orders', $data, 'GET');
+        $response = $this->ApiCall('/ecommerce/v3/orders', $params, 'GET');
         if (is_array($response)) {
             foreach ($response as $order_data) {
                 $statuses[] = [
@@ -497,7 +462,7 @@ class Api
      */
 
     public function addOrder($order) {
-        $status = $this->ApiCall('orders', $order->getData(), 'POST');
+        $status = $this->ApiCall('/ecommerce/v3/orders', $order->getData(), 'POST');
         if ($status !== false) {
             return $status['externalId'] ?? false;
         }
@@ -511,10 +476,10 @@ class Api
 
     public function updateOrder($order, $data = null) {
         if (is_object($order)) {
-            $status = $this->ApiCall('orders/' . $order->getExternalId(), $order->getData(), 'PUT');
+            $status = $this->ApiCall('/ecommerce/v3/orders/' . $order->getExternalId(), $order->getData(), 'PUT');
         } else {
             $glue_order_id = $order;
-            $status = $this->ApiCall('orders/' . $glue_order_id, $data, 'PUT');
+            $status = $this->ApiCall('/ecommerce/v3/orders/' . $glue_order_id, $data, 'PUT');
         }
         if ($status !== false) {
             return $status['externalId'] ?? false;
@@ -528,7 +493,7 @@ class Api
      */
 
     public function getOrder($order_id) {
-        $status = $this->ApiCall('orders/' . $order_id, '', 'GET');
+        $status = $this->ApiCall('/ecommerce/v3/orders/' . $order_id, '', 'GET');
         return $status;
     }
 
@@ -538,8 +503,35 @@ class Api
      */
 
     public function deleteOrder($order_id) {
-        $status = $this->ApiCall('orders/' . $order_id, '', 'DELETE');
+        $status = $this->ApiCall('/ecommerce/v3/orders/' . $order_id, '', 'DELETE');
         return $status;
+    }
+    
+    public function getPickupPoints($postcode = null, $street_address = null, $country = null, $city = null, $service_code = null, $type = null) {
+        if ((null == $postcode && null == $street_address)
+            || ('' == trim($postcode) && '' == trim($street_address))) {
+            return array();
+        }
+
+        $response = $this->ApiCall('/ecommerce/v3/pickup-points'
+            . '?serviceCode=' . urlencode($service_code)
+            . '&postalCode=' . urlencode($postcode)
+            . '&postOffice=' . urlencode($city)
+            . '&streetAddress=' . urlencode($street_address)
+            . '&country=' . urlencode($country)
+            . '&type=' . urlencode($type), '', 'GET');
+        if (!is_array($response)) {
+            return [];
+        }
+
+        $result = array();
+        foreach ($response as $p) {
+            $pickupPoint = new PickupPoint();
+            $pickupPoint->fillData($p);
+            $result[] = $pickupPoint;
+        }
+
+        return $result;
     }
 
     /*
@@ -549,20 +541,20 @@ class Api
      * @return bool|string
      */
 
-    private function getPostiToken($url, $user, $secret) {
+    private function createToken($url, $user, $secret) {
         $headers = array();
 
         $headers[] = 'Accept: application/json';
         $headers[] = 'Authorization: Basic ' . base64_encode("$user:$secret");
 
         $options = array(
-            CURLOPT_POST => 1,
+            CURLOPT_POST => 0,
             CURLOPT_HEADER => 0,
             CURLOPT_URL => $url,
             CURLOPT_FRESH_CONNECT => 1,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_FORBID_REUSE => 1,
-            //CURLOPT_USERAGENT       => $this->user_agent,
+            CURLOPT_USERAGENT => $this->user_agent,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTPHEADER => $headers,
         );
