@@ -10,10 +10,10 @@ use Posti\Glue\Api;
 
 try {
     $api = new Api($username, $password, $user_agent, true);
-    $order = $api->getOrder($order_id);
-    echo '<pre>';
-    var_dump($order);
-    echo '</pre>';
+    $catalogs = $api->getCatalogs();
+    foreach ($catalogs as $catalog) {
+        echo $catalog->getExternalId() . ', ' . $catalog->getCatalogName() . '<br>';
+    }
 
 } catch (\Exception $ex)  {
     echo $ex->getMessage();

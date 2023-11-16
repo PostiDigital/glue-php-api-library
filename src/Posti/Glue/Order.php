@@ -4,6 +4,7 @@ namespace Posti\Glue;
 
 use Posti\Glue\Order\Address;
 use Posti\Glue\Order\Item;
+use Posti\Glue\Order\Reference;
 
 class Order
 {
@@ -12,18 +13,14 @@ class Order
      */
 
     protected $optional = [
-        'routing_service'
+        'routing_service',
+        'pickup_point_id'
     ];
 
     /*
      * @var string
      */
     private $id;
-
-    /*
-     * @var string
-     */
-    private $business_id;
 
     /*
      * @var string
@@ -51,6 +48,11 @@ class Order
     private $routing_service;
 
     /*
+     * @var int
+     */
+    private $pickup_point_id;
+
+    /*
      * @var array
      */
     private $additional_services = [];
@@ -74,11 +76,12 @@ class Order
      * @var Address
      */
     private $delivery;
-    
+
     /*
      * @var array
      */
     private $items = [];
+<<<<<<< HEAD
     
     /*
      * @return string
@@ -107,23 +110,22 @@ class Order
     public function getId() {
         return $this->id;
     }
+=======
+>>>>>>> dev
 
     /*
-     * @param string $business_id
-     * @return Order
+     * @var array
      */
+    private $references = [];
 
-    public function setBusinessId($business_id) {
-        $this->business_id = $business_id;
-        return $this;
-    }
+    private $deliveryOperator = 'Posti';
 
     /*
      * @return string
      */
 
-    public function getBusinessId() {
-        return $this->business_id;
+    public function getExternalId() {
+        return $this->getPrefix() . $this->getId();
     }
 
     /*
@@ -214,6 +216,24 @@ class Order
 
     public function getRoutingService() {
         return $this->routing_service;
+    }
+
+    /*
+     * @param string $pickup_point_id
+     * @return Order
+     */
+
+    public function setPickupPointId($pickup_point_id) {
+        $this->pickup_point_id = $pickup_point_id;
+        return $this;
+    }
+
+    /*
+     * @return string
+     */
+
+    public function getPickupPointId() {
+        return $this->pickup_point_id;
     }
 
     /*
@@ -308,25 +328,42 @@ class Order
     public function getDelivery() {
         return $this->delivery;
     }
-    
+
+    /**
+     * @return Order
+     */
+    public function setDeliveryOperator($deliveryOperator) {
+        $this->deliveryOperator = $deliveryOperator;
+        return $this;
+    }
+
+    /**
+     * @return string Delivery Operator
+     */
+    public function getDeliveryOperator() {
+        return $this->deliveryOperator;
+    }
     /*
      * @param Item $item
      * @return Order
      */
-    
+
     public function addItem(Item $item) {
         $this->items[] = $item;
         return $this;
     }
 
     /*
-     * @return array
+     * @param Reference $item
+     * @return Order
      */
 
-    public function getItems() {
-        return $this->items;
+    public function addReference(Reference $reference) {
+        $this->references[] = $reference;
+        return $this;
     }
 
+<<<<<<< HEAD
     /**
      * @param bool $useBusinessId
      */
@@ -352,8 +389,14 @@ class Order
         $checksum = (10 - $sum % 10) % 10;
 
         $reference = implode('', $base) . $checksum;
+=======
+    /*
+     * @return array
+     */
+>>>>>>> dev
 
-        return $reference;
+    public function getItems() {
+        return $this->items;
     }
 
     public function getData() {
@@ -364,7 +407,6 @@ class Order
         foreach ($this->additional_services as $_service) {
             $additional_services[] = ["serviceCode" => (string) $_service];
         }
-        $business_id = $this->business_id;
         $order_items = array();
 
         $item_counter = 1;
@@ -380,7 +422,7 @@ class Order
             ];
             $item_counter++;
         }
-        $posti_order_id = $this->getBusinessId() . '-' . $this->getId();
+        $posti_order_id = $this->getPrefix() . $this->getId();
 
         $order = array(
             "externalId" => $posti_order_id,
@@ -388,6 +430,7 @@ class Order
             "metadata" => [
                 "documentType" => "SalesOrder"
             ],
+            "references" => [],
             "vendor" => [
                 "name" => $this->sender->getName(),
                 "streetAddress" => $this->sender->getStreet(),
@@ -405,7 +448,7 @@ class Order
                 "email" => $this->sender->getEmail()
             ],
             "client" => [
-                "externalId" => $this->getBusinessId() . "-" . $this->receiver->getId(),
+                "externalId" => $this->getPrefix() . $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
                 "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
@@ -415,7 +458,7 @@ class Order
                 "email" => $this->receiver->getEmail(),
             ],
             "recipient" => [
-                "externalId" => $this->getBusinessId() . "-" . $this->receiver->getId(),
+                "externalId" => $this->getPrefix() . $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
                 "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
@@ -425,7 +468,7 @@ class Order
                 "email" => $this->receiver->getEmail(),
             ],
             "deliveryAddress" => [
-                "externalId" => $this->getBusinessId() . "-" . $this->delivery->getId(),
+                "externalId" => $this->getPrefix() . $this->delivery->getId(),
                 "name" => $this->delivery->getName(),
                 "streetAddress" => $this->delivery->getStreet(),
                 "postalCode" => $this->delivery->getPostcode(),
@@ -437,12 +480,14 @@ class Order
             "currency" => $this->getCurrency(),
             "serviceCode" => $this->getService(),
             "routingServiceCode" => $this->getRoutingService(),
+            "pickupPointId" => $this->getPickupPointId(),
             "totalPrice" => $this->getTotalPrice(),
             "totalTax" => $this->getTotalTax(),
-            "totalWholeSalePrice" => $this->getTotalPrice() + $this->getTotalTax(),
-            "deliveryOperator" => "Posti",
+            "totalWholeSalePrice" => round($this->getTotalPrice() + $this->getTotalTax(), 2),
+            "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
+<<<<<<< HEAD
         /*
           if ($pickup_point) {
           $address = $this->pickupPointData($pickup_point, $_order, $business_id);
@@ -453,9 +498,16 @@ class Order
         if ($this->getUseBusinessId()) {
             $order["clientId"] = (string) $this->getBusinessId();
         }
+=======
+>>>>>>> dev
 
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
+        }
+
+        //add references
+        foreach ($this->references as $reference) {
+            $order["references"][] = $reference->toArray();
         }
 
         return $order;
@@ -499,4 +551,26 @@ class Order
         return $name;
     }
 
+    /*
+     * @param array $data
+     * @return Order
+     */
+    //TO DO: make clever way of filling Object to array
+    /*
+    public function fillData($data) {
+        if (!is_array($data)) {
+            return false;
+        }
+        $this->setExternalId($data['externalId'] ?? null);
+        $this->setCatalogType($data['catalogType'] ?? null);
+        $this->setCatalogName($data['catalogName'] ?? null);
+        $this->setSupplierId($data['supplierId'] ?? null);
+        $this->setRetailerId($data['retailerId'] ?? null);
+        $this->setBackOrderAllowed($data['backOrderAllowed'] ?? null);
+        $this->setPriority($data['priority'] ?? null);
+        $this->setRouteWeight($data['routeWeight'] ?? null);
+        $this->setPublic($data['public'] ?? null);
+        return $this;
+    }
+    */
 }

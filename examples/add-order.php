@@ -14,9 +14,7 @@ use Posti\Glue\Order\Item;
 try {
     $order = new Order();
     
-    $order->setId('123');
     $order->setOrderDate('2021-01-01 08:00:00');
-    $order->setBusinessId($business_id);
     $order->setCurrency('EUR');
     $order->setTotalPrice(20.10);
     $order->setTotalTax(5.30);
@@ -55,7 +53,7 @@ try {
     $order->addItem($item);
     
     
-    $api = new Api($username, $password, $business_id, $contract_number, true);
+    $api = new Api($username, $password, $user_agent, true);
     $api->setDebug(true, "../debug.log");
     $result = $api->addOrder($order);
     if ($result !== false) {

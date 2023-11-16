@@ -7,12 +7,11 @@ require '../vendor/autoload.php';
 require 'config.php';
 
 use Posti\Glue\Api;
-use Posti\Glue\Product;
+use Posti\Glue\InventoryItem;
+use Posti\Glue\StockBalance;
 
 try {
-    $product = new Product();
-    $product->setWarehouse($warehouse_id);
-    $product->setBusinessId($business_id);
+    $product = new InventoryItem();
     $product->setDistributor($distributor_id);
     
     $product->setName("Api test product");
@@ -23,15 +22,20 @@ try {
     $product->setIsOversized(false);
     
     $product->setCurrency("EUR");
-    $product->setPrice(10.6);
-    $product->setWholesalePrice(10.6);
-    
-    $product->setEan("TEST-0123456789");
+    $product->setRecommendedRetailPrice(10.6);    
+    $product->setExternalId("TEST-0123456789");
     
     $product->setHeight(0.3); //m
     $product->setLength(0.1); //m
     $product->setWidth(0.2); //m
     $product->setWeight(0.4); //kg
+    
+    $balance = new StockBalance();
+    $balance->setCatalogExternalId($warehouse_id);
+    $balance->setRetailerId($retailer_id);
+    $balance->setWholesalePrice(10.6);
+    $balance->setCurrency("EUR");
+    $product->addBalance($balance);
     
     $specification = array([
         "type"=> "Options",
@@ -46,9 +50,9 @@ try {
     ]);
     $product->setSpecifications($specification);
     
-    $api = new Api($username, $password, $business_id, $contract_number, true);
+    $api = new Api($username, $password, $user_agent, true);
     $api->setDebug(true, "../debug.log");
-    $result = $api->addProduct($product);
+    $result = $api->addInventoryItems($product);
     if ($result !== false) {
         echo 'Product added/updated';
     }

@@ -9,8 +9,9 @@ require 'config.php';
 use Posti\Glue\Api;
 
 try {
-    $api = new Api($username, $password, $business_id, $contract_number, true);
-    $products = $api->getProductsByWarehouse($warehouse_id);
+    $api = new Api($username, $password, $user_agent, true);
+    $api->setDebug(true, "../debug.log");
+    $products = $api->getInventoryItems($warehouse_id, $business_id);
     echo '<pre>';
     print_r($products);
     echo '</pre>';
