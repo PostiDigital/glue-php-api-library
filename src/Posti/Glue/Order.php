@@ -9,18 +9,9 @@ use Posti\Glue\Order\Reference;
 class Order
 {
     /*
-     * @var array
-     */
-
-    protected $optional = [
-        'routing_service',
-        'pickup_point_id'
-    ];
-
-    /*
      * @var string
      */
-    private $id;
+    private $external_id;
 
     /*
      * @var string
@@ -81,37 +72,6 @@ class Order
      * @var array
      */
     private $items = [];
-<<<<<<< HEAD
-    
-    /*
-     * @return string
-     */
-
-    private $useBusinessId = true;
-
-    public function getExternalId() {
-        return $this->getBusinessId() . '-' . $this->getId();
-    }
-
-    /*
-     * @param string $id
-     * @return Order
-     */
-
-    public function setId($id) {
-        $this->id = $id;
-        return $this;
-    }
-
-    /*
-     * @return string
-     */
-
-    public function getId() {
-        return $this->id;
-    }
-=======
->>>>>>> dev
 
     /*
      * @var array
@@ -124,8 +84,13 @@ class Order
      * @return string
      */
 
+    public function setExternalId($external_id) {
+        $this->external_id = $external_id;
+        return $this;
+    }
+    
     public function getExternalId() {
-        return $this->getPrefix() . $this->getId();
+        return $this->external_id;
     }
 
     /*
@@ -363,45 +328,15 @@ class Order
         return $this;
     }
 
-<<<<<<< HEAD
-    /**
-     * @param bool $useBusinessId
-     */
-    public function setUseBusinessId(bool $useBusinessId) {
-        $this->useBusinessId = $useBusinessId;
-    }
-
-    public function getUseBusinessId() {
-        return $this->useBusinessId;
-    }
-    public static function calculate_reference($id) {
-        $weights = array(7, 3, 1);
-        $sum = 0;
-
-        $base = str_split(strval(($id)));
-        $reversed_base = array_reverse($base);
-        $reversed_base_length = count($reversed_base);
-
-        for ($i = 0; $i < $reversed_base_length; $i++) {
-            $sum += $reversed_base[$i] * $weights[$i % 3];
-        }
-
-        $checksum = (10 - $sum % 10) % 10;
-
-        $reference = implode('', $base) . $checksum;
-=======
     /*
      * @return array
      */
->>>>>>> dev
 
     public function getItems() {
         return $this->items;
     }
 
     public function getData() {
-        $this->validate();
-
         $additional_services = [];
 
         foreach ($this->additional_services as $_service) {
@@ -422,10 +357,9 @@ class Order
             ];
             $item_counter++;
         }
-        $posti_order_id = $this->getPrefix() . $this->getId();
 
         $order = array(
-            "externalId" => $posti_order_id,
+            "externalId" => $this->external_id,
             "orderDate" => date('Y-m-d\TH:i:s.vP', strtotime((string) $this->getOrderDate())),
             "metadata" => [
                 "documentType" => "SalesOrder"
@@ -448,7 +382,7 @@ class Order
                 "email" => $this->sender->getEmail()
             ],
             "client" => [
-                "externalId" => $this->getPrefix() . $this->receiver->getId(),
+                "externalId" => $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
                 "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
@@ -458,7 +392,7 @@ class Order
                 "email" => $this->receiver->getEmail(),
             ],
             "recipient" => [
-                "externalId" => $this->getPrefix() . $this->receiver->getId(),
+                "externalId" => $this->receiver->getId(),
                 "name" => $this->receiver->getName(),
                 "streetAddress" => $this->receiver->getStreet(),
                 "postalCode" => $this->receiver->getPostcode(),
@@ -468,7 +402,7 @@ class Order
                 "email" => $this->receiver->getEmail(),
             ],
             "deliveryAddress" => [
-                "externalId" => $this->getPrefix() . $this->delivery->getId(),
+                "externalId" => $this->delivery->getId(),
                 "name" => $this->delivery->getName(),
                 "streetAddress" => $this->delivery->getStreet(),
                 "postalCode" => $this->delivery->getPostcode(),
@@ -487,19 +421,6 @@ class Order
             "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
-<<<<<<< HEAD
-        /*
-          if ($pickup_point) {
-          $address = $this->pickupPointData($pickup_point, $_order, $business_id);
-          if ($address) {
-          $order['deliveryAddress'] = $address;
-          }
-          } */
-        if ($this->getUseBusinessId()) {
-            $order["clientId"] = (string) $this->getBusinessId();
-        }
-=======
->>>>>>> dev
 
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
@@ -512,65 +433,5 @@ class Order
 
         return $order;
     }
-
-    /*
-     * @return mixed
-     */
-
-    private function validate() {
-        $errors = [];
-        $vars = get_object_vars($this);
-        foreach ($vars as $var => $value) {
-            if (in_array(trim($var, '$'), $this->optional)) {
-                continue;
-            }
-            if ($value === null) {
-                $errors[] = 'Variable ' . $var . ' is missing. Set it with set' . $this->getMethodName($var) . '($val).';
-            }
-        }
-        if (empty($this->items)) {
-             $errors[] = 'Order items are missing. Add them with addItem($item).';
-        }
-        if (!empty($errors)) {
-            throw new \Exception(implode("<br/>", $errors));
-        }
-        return true;
-    }
-
-    /*
-     * @param string $var
-     * @return string
-     */
-
-    private function getMethodName($var) {
-        $name = '';
-        $parts = explode('_', trim($var, '$'));
-        foreach ($parts as $part) {
-            $name .= ucfirst($part);
-        }
-        return $name;
-    }
-
-    /*
-     * @param array $data
-     * @return Order
-     */
-    //TO DO: make clever way of filling Object to array
-    /*
-    public function fillData($data) {
-        if (!is_array($data)) {
-            return false;
-        }
-        $this->setExternalId($data['externalId'] ?? null);
-        $this->setCatalogType($data['catalogType'] ?? null);
-        $this->setCatalogName($data['catalogName'] ?? null);
-        $this->setSupplierId($data['supplierId'] ?? null);
-        $this->setRetailerId($data['retailerId'] ?? null);
-        $this->setBackOrderAllowed($data['backOrderAllowed'] ?? null);
-        $this->setPriority($data['priority'] ?? null);
-        $this->setRouteWeight($data['routeWeight'] ?? null);
-        $this->setPublic($data['public'] ?? null);
-        return $this;
-    }
-    */
 }
+

@@ -513,7 +513,7 @@ class InventoryItem
         if (isset($data['balances'])) {
             foreach ($data['balances'] as $b) {
                 $balance = new StockBalance();
-                $balance.fillData($b);
+                $balance->fillData($b);
 
                 $this->addBalance($balance);
             }
