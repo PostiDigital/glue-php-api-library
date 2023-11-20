@@ -186,7 +186,7 @@ class Api
      * @retrun mixed
      */
     
-    private function ApiCall($url, $data = '', $action = 'GET', $page = 0) {
+    private function ApiCallFetchPages($url, $data = '', $action = 'GET', $page = 0) {
         if (!$this->token) {
             $this->getToken();
         }
@@ -198,7 +198,6 @@ class Api
         
         $payload = '';
         if ($data) {
-            $this->logger->log("info", $data);
             $payload = json_encode($data);
         }
         
@@ -235,36 +234,21 @@ class Api
         curl_setopt($curl, CURLOPT_ENCODING , "");
         curl_setopt($curl, CURLOPT_URL, $this->getApiUrl() . $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        
+
         $result = curl_exec($curl);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $this->last_status = $http_status;
         curl_close($curl);
-        
-        $this->logger->log('info', sprintf("Request: %s\n%s %s\nHeaders\n%s\nResponse:\n%s",
-            $this->getApiUrl() . $url,
-            $action,
-            $url,
-            json_encode($header),
-            
-            base64_encode($result),
-            ));
-        $this->logger->log("info", $env . $action . " Request to: " . $this->getApiUrl() . $url . "\nResponse: " . $result);
-        
-        if (!$result) {
-            $this->logger->log("error", $http_status . ' - response from ' . $this->getApiUrl() . $url . ': ' . $result);
-            return false;
-        }
-        
-        
-        if ($http_status != 200) {
-            $this->logger->log("error", $env . " " . $action . "Request to: " . $this->getApiUrl() . $url . "\nResponse code: " . $http_status . "\nResult: " . $result);
+
+        if ($http_status < 200 || $http_status >= 300) {
+            $this->logger->log('error', $env . "HTTP $http_status : $action request to $url" . ( isset($payload) ? " with payload:\r\n $payload" : '' ) . "\r\n\r\nand result:\r\n $result");
             return false;
         }
         $result_data = json_decode($result, true);
         
         $result_content = $result_data['content'] ?? $result_data;
         if (isset($result_data['page']) && $result_data['page']['totalPages'] > ($page + 1)) {
-            $page_response = $this->ApiCall($url, $data, $action, $page + 1);
+            $page_response = $this->ApiCallFetchPages($url, $data, $action, $page + 1);
             if (!empty($page_response)) {
                 $result_content = array_merge($result_content, $page_response);
             }
@@ -272,7 +256,7 @@ class Api
         return $result_content;
     }
     
-    private function ApiCallNoTricks($url, $data = '', $action = 'GET') {
+    private function ApiCall($url, $data = '', $action = 'GET') {
         if (!$this->token) {
             $this->getToken();
         }
@@ -306,13 +290,12 @@ class Api
         $result = curl_exec($curl);
         $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $this->last_status = $http_status;
-        
+
         if ($http_status < 200 || $http_status >= 300) {
             $this->logger->log('error', $env . "HTTP $http_status : $action request to $url" . ( isset($payload) ? " with payload:\r\n $payload" : '' ) . "\r\n\r\nand result:\r\n $result");
             return false;
         }
         
-        $this->logger->log('info', $env . "HTTP $http_status : $action request to $url" . ( isset($payload) ? " with payload\r\n $payload" : '' ));
         return json_decode($result, true);
     }
 
@@ -329,7 +312,7 @@ class Api
      */
 
     public function getCatalogs() {
-        $catalogs_data = $this->ApiCall('/ecommerce/v3/catalogs?role=RETAILER', '', 'GET');
+        $catalogs_data = $this->ApiCallFetchPages('/ecommerce/v3/catalogs?role=RETAILER', '', 'GET');
         if (!is_array($catalogs_data)) {
             $catalogs_data = array();
         }
@@ -362,7 +345,7 @@ class Api
      */
 
     public function getInventoryItemsByCatalog($catalogExternalId, $retailerId, $attrs = '') {
-        $products_data = $this->ApiCall('/ecommerce/v3/inventory?retailerId=' . $retailerId . '&catalogExternalId=' . $catalogExternalId, $attrs, 'GET');
+        $products_data = $this->ApiCallFetchPages('/ecommerce/v3/inventory?retailerId=' . $retailerId . '&catalogExternalId=' . $catalogExternalId, $attrs, 'GET');
         $products = [];
         if (is_array($products_data)) {
             foreach ($products_data as $data) {
@@ -410,7 +393,7 @@ class Api
             return [];
         }
         
-        return $this->ApiCallNoTricks('/ecommerce/v3/catalogs/' . $catalog_id . '/balances?modifiedFromDate=' . urlencode($dttm_since) . '&size=' . $size . '&page=' . $page, '', 'GET');
+        return $this->ApiCall('/ecommerce/v3/catalogs/' . $catalog_id . '/balances?modifiedFromDate=' . urlencode($dttm_since) . '&size=' . $size . '&page=' . $page, '', 'GET');
     }
     
     public function getBalancesUpdatedSinceForProduct($catalog_id, $dttm_since = null, $product_external_id = null, $size, $page = 0) {
@@ -434,7 +417,7 @@ class Api
         $params['size'] = $size;
         $params['page'] = $page;
 
-        return $this->ApiCallNoTricks('/ecommerce/v3/catalogs/' . $catalog_id . '/balances', $params, 'GET');
+        return $this->ApiCall('/ecommerce/v3/catalogs/' . $catalog_id . '/balances', $params, 'GET');
     }
 
     /*
@@ -451,7 +434,7 @@ class Api
             $data['updatedFrom'] = date('c', strtotime($date));
         }
         $orders = [];
-        $response = $this->ApiCall('/ecommerce/v3/orders', $data, 'GET');
+        $response = $this->ApiCallFetchPages('/ecommerce/v3/orders', $data, 'GET');
         return $response;
         //TODO: create Order objects from response data
         /*
@@ -487,7 +470,7 @@ class Api
         }
 
         $statuses = [];
-        $response = $this->ApiCall('/ecommerce/v3/orders', $params, 'GET');
+        $response = $this->ApiCallFetchPages('/ecommerce/v3/orders', $params, 'GET');
         if (is_array($response)) {
             foreach ($response as $order_data) {
                 $statuses[] = [
