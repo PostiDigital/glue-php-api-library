@@ -525,6 +525,11 @@ class Api
         return $status;
     }
 
+    public function getServices( $workflow) {
+        $services = $this->ApiCall('/ecommerce/v3/services', array('workflow' => urlencode($workflow)) , 'GET');
+        return $services;
+    }
+
     /*
      * @param string $order_id
      * @return mixed
