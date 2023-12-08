@@ -11,9 +11,9 @@ use Posti\Glue\Api;
 try {
     $api = new Api($username, $password, $user_agent, true);
     $api->setDebug(true, "../debug.log");
-    $statuses = $api->getCatalogOrdersStatuses($warehouse_id, '2021-08-24');
+    $orders = $api->getCatalogOrders($warehouse_id, '2021-08-24');
     echo '<pre>';
-    var_dump($statuses);
+    var_dump($orders);
     echo '</pre>';
 
 } catch (\Exception $ex)  {

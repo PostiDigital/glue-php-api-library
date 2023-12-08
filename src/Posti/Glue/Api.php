@@ -425,38 +425,7 @@ class Api
      * @param string $date
      * @return mixed
      */
-
-    public function getCatalogOrders($catalog_id, $date = null) {
-        $data = [
-            'warehouseExternalId' => $catalog_id
-        ];
-        if ($date) {
-            $data['updatedFrom'] = date('c', strtotime($date));
-        }
-        $orders = [];
-        $response = $this->ApiCallFetchPages('/ecommerce/v3/orders', $data, 'GET');
-        return $response;
-        //TODO: create Order objects from response data
-        /*
-        if (is_array($response)) {
-            foreach ($response as $item) {
-                $order = new Order();
-                $order->fillData($item);
-                $orders[] = $order;
-            }
-            return $response;
-        }
-        return $response;
-         *
-         */
-    }
-
-    /*
-     * @param string $catalog_id
-     * @param string $date
-     * @return mixed
-     */
-    public function getCatalogOrdersStatuses($catalog_id = null, $date = null) {
+    public function getCatalogOrders($catalog_id = null, $date = null) {
         $params = null;
         if ($catalog_id || $date) {
             $params = array();
@@ -469,19 +438,7 @@ class Api
             }
         }
 
-        $statuses = [];
-        $response = $this->ApiCallFetchPages('/ecommerce/v3/orders', $params, 'GET');
-        if (is_array($response)) {
-            foreach ($response as $order_data) {
-                $statuses[] = [
-                    'externalId' => $order_data['externalId'],
-                    'clientId' => $order_data['clientId'],
-                    'status' => $order_data['status']['value'] ?? null,
-                ];
-            }
-            return $statuses;
-        }
-        return $response;
+        return $this->ApiCallFetchPages('/ecommerce/v3/orders', $params, 'GET');
     }
 
     /*
