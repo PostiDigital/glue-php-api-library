@@ -16,6 +16,11 @@ class Order
     /*
      * @var string
      */
+    private $status;
+    
+    /*
+     * @var string
+     */
     private $currency;
 
     /*
@@ -93,6 +98,15 @@ class Order
         return $this->external_id;
     }
 
+    public function setStatus($status) {
+        $this->status = $status;
+        return $this;
+    }
+    
+    public function getStatus() {
+        return $this->status;
+    }
+    
     /*
      * @param string $currency
      * @return Order
@@ -337,13 +351,7 @@ class Order
     }
 
     public function getData() {
-        $additional_services = [];
-
-        foreach ($this->additional_services as $_service) {
-            $additional_services[] = ["serviceCode" => (string) $_service];
-        }
         $order_items = array();
-
         $item_counter = 1;
         foreach ($this->items as $item) {
             $order_items[] = [
@@ -422,8 +430,18 @@ class Order
             "rows" => $order_items
         );
 
+        $additional_services = [];
+        foreach ($this->additional_services as $_service) {
+            $additional_services[] = ["serviceCode" => (string) $_service];
+        }
         if (!empty($additional_services)) {
             $order['additionalServices'] = $additional_services;
+        }
+
+        if (!empty($item->status)) {
+            $order['status'] = array(
+                'value' => $item->status
+            );
         }
 
         //add references
