@@ -473,6 +473,11 @@ class Api
         return $status;
     }
 
+    public function reopenOrder($order_id) {
+        $response = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order_id), '', 'POST');
+        return $response;
+    }
+
     /*
      * @param string $order_id
      * @return mixed
