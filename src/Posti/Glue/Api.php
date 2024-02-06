@@ -335,7 +335,7 @@ class Api
      */
 
     public function getInventoryItem($id) {
-        $product_data = $this->ApiCall('/ecommerce/v3/inventory/' . $id, '', 'GET');
+        $product_data = $this->ApiCall('/ecommerce/v3/inventory/' . urlencode($id), '', 'GET');
         $product = new InventoryItem();
         return $product->fillData($product_data);
     }
@@ -394,7 +394,7 @@ class Api
             return [];
         }
         
-        return $this->ApiCall('/ecommerce/v3/catalogs/' . $catalog_id . '/balances?modifiedFromDate=' . urlencode($dttm_since) . '&size=' . $size . '&page=' . $page, '', 'GET');
+        return $this->ApiCall('/ecommerce/v3/catalogs/' . urlencode($catalog_id) . '/balances?modifiedFromDate=' . urlencode($dttm_since) . '&size=' . $size . '&page=' . $page, '', 'GET');
     }
     
     public function getBalancesUpdatedSinceForProduct($catalog_id, $dttm_since = null, $product_external_id = null, $size, $page = 0) {
@@ -418,7 +418,7 @@ class Api
         $params['size'] = $size;
         $params['page'] = $page;
 
-        return $this->ApiCall('/ecommerce/v3/catalogs/' . $catalog_id . '/balances', $params, 'GET');
+        return $this->ApiCall('/ecommerce/v3/catalogs/' . urlencode($catalog_id) . '/balances', $params, 'GET');
     }
 
     /*
@@ -462,10 +462,10 @@ class Api
 
     public function updateOrder($order, $data = null) {
         if (is_object($order)) {
-            $status = $this->ApiCall('/ecommerce/v3/orders/' . $order->getExternalId(), $order->getData(), 'PUT');
+            $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order->getExternalId()), $order->getData(), 'PUT');
         } else {
             $glue_order_id = $order;
-            $status = $this->ApiCall('/ecommerce/v3/orders/' . $glue_order_id, $data, 'PUT');
+            $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($glue_order_id), $data, 'PUT');
         }
         if ($status !== false) {
             return $status['externalId'] ?? false;
@@ -479,7 +479,7 @@ class Api
      */
 
     public function getOrder($order_id) {
-        $status = $this->ApiCall('/ecommerce/v3/orders/' . $order_id, '', 'GET');
+        $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order_id), '', 'GET');
         return $status;
     }
 
@@ -494,7 +494,7 @@ class Api
      */
 
     public function deleteOrder($order_id) {
-        $status = $this->ApiCall('/ecommerce/v3/orders/' . $order_id, '', 'DELETE');
+        $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order_id), '', 'DELETE');
         return $status;
     }
     
