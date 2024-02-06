@@ -438,9 +438,9 @@ class Order
             $order['additionalServices'] = $additional_services;
         }
 
-        if (!empty($item->status)) {
+        if (!empty($this->status)) {
             $order['status'] = array(
-                'value' => $item->status
+                'value' => $this->status
             );
         }
 

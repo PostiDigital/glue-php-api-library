@@ -461,7 +461,7 @@ class Api
      */
 
     public function updateOrder($order, $data = null) {
-        if (is_object($order)) {
+        if (empty($data)) {
             $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order->getExternalId()), $order->getData(), 'PUT');
         } else {
             $glue_order_id = $order;
