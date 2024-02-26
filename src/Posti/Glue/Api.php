@@ -257,7 +257,7 @@ class Api
         return $result_content;
     }
     
-    private function ApiCall($url, $data = '', $action = 'GET') {
+    private function ApiCall($url, $data = '', $action = 'GET', $return_false_on_fail = true) {
         if (!$this->token) {
             $this->getToken();
         }
@@ -294,10 +294,12 @@ class Api
 
         if ($http_status < 200 || $http_status >= 300) {
             $this->logger->log('error', $env . "HTTP $http_status : $action request to $url" . ( isset($payload) ? " with payload:\r\n $payload" : '' ) . "\r\n\r\nand result:\r\n $result");
-            return false;
+            if ($return_false_on_fail === true) {
+                return false;
+            }
         }
-        
-        return json_decode($result, true);
+
+        return !empty($result) ? json_decode($result, true) : null;
     }
 
     /*
@@ -462,19 +464,15 @@ class Api
 
     public function updateOrder($order, $data = null) {
         if (empty($data)) {
-            $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order->getExternalId()), $order->getData(), 'PUT');
-        } else {
-            $glue_order_id = $order;
-            $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($glue_order_id), $data, 'PUT');
+            return $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order->getExternalId()), $order->getData(), 'PUT', false);
         }
-        if ($status !== false) {
-            return $status['externalId'] ?? false;
-        }
-        return $status;
+
+        $glue_order_id = $order;
+        return $this->ApiCall('/ecommerce/v3/orders/' . urlencode($glue_order_id), $data, 'PUT', false);
     }
 
     public function reopenOrder($order_id) {
-        $response = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order_id), '', 'POST');
+        $response = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order_id), '', 'POST', false);
         return $response;
     }
 
@@ -485,6 +483,13 @@ class Api
 
     public function getOrder($order_id) {
         $status = $this->ApiCall('/ecommerce/v3/orders/' . urlencode($order_id), '', 'GET');
+        return $status;
+    }
+    
+    public function getOrderByReference($ref_name, $ref_value) {
+        $status = $this->ApiCall('/ecommerce/v3/orders'
+            . '?refName=' . urlencode($ref_name)
+            . '&refValue=' . urlencode($ref_value), '', 'GET');
         return $status;
     }
 
