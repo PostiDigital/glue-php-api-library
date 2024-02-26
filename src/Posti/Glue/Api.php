@@ -486,7 +486,7 @@ class Api
         return $status;
     }
     
-    public function getOrderByReference($ref_name, $ref_value) {
+    public function getOrdersByReference($ref_name, $ref_value) {
         $status = $this->ApiCall('/ecommerce/v3/orders'
             . '?refName=' . urlencode($ref_name)
             . '&refValue=' . urlencode($ref_value), '', 'GET');
