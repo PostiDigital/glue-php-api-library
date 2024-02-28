@@ -83,7 +83,7 @@ class Order
      */
     private $references = [];
 
-    private $deliveryOperator = 'Posti';
+    private $deliveryOperator;
 
     /*
      * @return string
@@ -426,9 +426,12 @@ class Order
             "totalPrice" => $this->getTotalPrice(),
             "totalTax" => $this->getTotalTax(),
             "totalWholeSalePrice" => round($this->getTotalPrice() + $this->getTotalTax(), 2),
-            "deliveryOperator" => $this->getDeliveryOperator(),
             "rows" => $order_items
         );
+        
+        if (!empty($this->getDeliveryOperator())) {
+            $order['deliveryOperator'] = $this->getDeliveryOperator();
+        }
 
         $additional_services = [];
         foreach ($this->additional_services as $_service) {
