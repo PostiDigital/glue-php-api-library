@@ -508,7 +508,7 @@ class Api
         return $status;
     }
     
-    public function getPickupPoints($postcode = null, $street_address = null, $country = null, $city = null, $service_code = null, $type = null, $size = null) {
+    public function getPickupPoints($postcode = null, $street_address = null, $country = null, $city = null, $service_code = null, $type = null, $capability = null, $size = null) {
         if ((null == $postcode && null == $street_address)
             || ('' == trim($postcode) && '' == trim($street_address))) {
             return array();
@@ -521,6 +521,7 @@ class Api
             . '&streetAddress=' . urlencode($street_address)
             . '&country=' . urlencode($country)
             . '&type=' . urlencode($type)
+            . '&capability=' . urlencode($capability)
             . '&size=' . urlencode($size), '', 'GET');
         if (!is_array($response)) {
             return [];
